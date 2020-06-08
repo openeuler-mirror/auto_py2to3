@@ -1,37 +1,50 @@
 # auto_py2to3
 
 #### 介绍
-The ultimate purpose of the library is to enable automated and rapid code migration and provide automated testing.
+
+2020年1月1日，Python 2代码库被冻结。从那天开始，Python 2不再有进一步的移植，这实际上使该语言和运行时环境过时了。
+核心开发人员Nick Coghlan在常见问题解答中进行了解释，从而结束了“核心开发团队同时维护Python 2和3作为参考解释器大约13年的情况”。
+Python 2的最终版本目前正在通过beta测试和候选发布阶段，并且最终的生产级版本python 2.7.18有望在2020年4月发布。
+尽管Python社区中的大多数人都认为Python需要急切更改-尤其是因为已经存在急需的Unicode支持。
+但是许多人对Python 2代码运行良好感到沮丧。因此，需要代码迁移，并且该库的最终目的是实现自动化和快速的代码迁移并提供自动化测试。
+在此过程中，尽管在代码迁移过程中可能存在一些不令人满意的地方，但库将继续进行迭代和维护。
+
 
 #### 软件架构
-软件架构说明
+
+* TODO 预计2020年6月20日完成软件架构流程搭建文档，6月底完成代码架构搭建。
+
+#### 版本支持
+
+* TODO 2.7  to  3.7
+
+#### 开发计划流程
+
+* TODO
+
+1. 单文件的2to3，跑测试用例。
+2. 单文件2to3，依赖库版本检索和分析，跑测试用例。
+3. 单文件2to3, 依赖库版本升级以及对应函数升级，跑测试用例。
+4. 简单项目架构所有py文件整体转，跑测试用例。
+5. 测试几个主流库的转换效果，并修改优化bug。
+
+语法层面转换Tips
+    1. Print
+    2. 除法运算
+    3. Unicode
+    4. Import
+    5. range and xrange
+    6. 迭代器的next()方法
+    7. For-loop variables
+    8. 比较不可比较的类型
+    9. 四舍五入
+    10. Classes
 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+暂无
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 码云特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5.  码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+暂无
