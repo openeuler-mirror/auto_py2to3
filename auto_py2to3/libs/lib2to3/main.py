@@ -75,7 +75,7 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
             else:
                 raise ValueError('filename %s does not start with the '
                                  'input_base_dir %s' % (
-                                         filename, self._input_base_dir))
+                                     filename, self._input_base_dir))
         if self._append_suffix:
             filename += self._append_suffix
         if orig_filename != filename:
@@ -126,6 +126,7 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
                          (filename,))
                     return
 
+
 def warn(msg):
     print("WARNING: %s" % (msg,), file=sys.stderr)
 
@@ -164,14 +165,14 @@ def main(fixer_pkg, args=None):
                       help="Don't write backups for modified files")
     parser.add_option("-o", "--output-dir", action="store", type="str",
                       default="", help="Put output files in this directory "
-                      "instead of overwriting the input files.  Requires -n.")
+                                       "instead of overwriting the input files.  Requires -n.")
     parser.add_option("-W", "--write-unchanged-files", action="store_true",
                       help="Also write files even if no changes were required"
-                      " (useful with --output-dir); implies -w.")
+                           " (useful with --output-dir); implies -w.")
     parser.add_option("--add-suffix", action="store", type="str", default="",
                       help="Append this string to all output filenames."
-                      " Requires -n if non-empty.  "
-                      "ex: --add-suffix='3' will generate .py3 files.")
+                           " Requires -n if non-empty.  "
+                           "ex: --add-suffix='3' will generate .py3 files.")
 
     # Parse command line arguments
     refactor_stdin = False
@@ -243,11 +244,11 @@ def main(fixer_pkg, args=None):
         logger.info('Output in %r will mirror the input directory %r layout.',
                     options.output_dir, input_base_dir)
     rt = StdoutRefactoringTool(
-            sorted(fixer_names), flags, sorted(explicit),
-            options.nobackups, not options.no_diffs,
-            input_base_dir=input_base_dir,
-            output_dir=options.output_dir,
-            append_suffix=options.add_suffix)
+        sorted(fixer_names), flags, sorted(explicit),
+        options.nobackups, not options.no_diffs,
+        input_base_dir=input_base_dir,
+        output_dir=options.output_dir,
+        append_suffix=options.add_suffix)
 
     # Refactor all files and directories passed as arguments
     if not rt.errors:

@@ -9,7 +9,7 @@ class FixItertoolsImports(fixer_base.BaseFix):
     BM_compatible = True
     PATTERN = """
               import_from< 'from' 'itertools' 'import' imports=any >
-              """ %(locals())
+              """ % (locals())
 
     def transform(self, node, results):
         imports = results['imports']

@@ -6,7 +6,6 @@ from .. import fixer_base
 from ..fixer_util import Call, Name
 from .. import patcomp
 
-
 context = patcomp.compile_pattern("power< 'eval' trailer< '(' any ')' > >")
 
 

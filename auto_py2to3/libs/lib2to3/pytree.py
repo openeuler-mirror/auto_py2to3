@@ -18,6 +18,8 @@ from io import StringIO
 HUGE = 0x7FFFFFFF  # maximum repeat count, default max
 
 _type_reprs = {}
+
+
 def type_repr(type_num):
     global _type_reprs
     if not _type_reprs:
@@ -28,8 +30,8 @@ def type_repr(type_num):
             if type(val) == int: _type_reprs[val] = name
     return _type_reprs.setdefault(type_num, type_num)
 
-class Base(object):
 
+class Base(object):
     """
     Abstract base class for Node and Leaf.
 
@@ -40,7 +42,7 @@ class Base(object):
     """
 
     # Default values for instance variables
-    type = None    # int: token number (< 256) or symbol number (>= 256)
+    type = None  # int: token number (< 256) or symbol number (>= 256)
     parent = None  # Parent node pointer, or None
     children = ()  # Tuple of subnodes
     was_changed = False
@@ -61,7 +63,7 @@ class Base(object):
             return NotImplemented
         return self._eq(other)
 
-    __hash__ = None # For Py3 compatibility.
+    __hash__ = None  # For Py3 compatibility.
 
     def _eq(self, other):
         """
@@ -161,7 +163,7 @@ class Base(object):
         for i, child in enumerate(self.parent.children):
             if child is self:
                 try:
-                    return self.parent.children[i+1]
+                    return self.parent.children[i + 1]
                 except IndexError:
                     return None
 
@@ -179,7 +181,7 @@ class Base(object):
             if child is self:
                 if i == 0:
                     return None
-                return self.parent.children[i-1]
+                return self.parent.children[i - 1]
 
     def leaves(self):
         for child in self.children:
@@ -204,11 +206,11 @@ class Base(object):
         def __str__(self):
             return str(self).encode("ascii")
 
-class Node(Base):
 
+class Node(Base):
     """Concrete implementation for interior nodes."""
 
-    def __init__(self,type, children,
+    def __init__(self, type, children,
                  context=None,
                  prefix=None,
                  fixers_applied=None):
@@ -315,13 +317,12 @@ class Node(Base):
 
 
 class Leaf(Base):
-
     """Concrete implementation for leaf nodes."""
 
     # Default values for instance variables
     _prefix = ""  # Whitespace and comments preceding this token in the input
-    lineno = 0    # Line where this token starts in the input
-    column = 0    # Column where this token tarts in the input
+    lineno = 0  # Line where this token starts in the input
+    column = 0  # Column where this token tarts in the input
 
     def __init__(self, type, value,
                  context=None,
@@ -392,6 +393,7 @@ class Leaf(Base):
         self.changed()
         self._prefix = prefix
 
+
 def convert(gr, raw_node):
     """
     Convert raw node information to a Node or Leaf instance.
@@ -412,7 +414,6 @@ def convert(gr, raw_node):
 
 
 class BasePattern(object):
-
     """
     A pattern is a tree matching pattern.
 
@@ -428,9 +429,9 @@ class BasePattern(object):
     """
 
     # Defaults for instance variables
-    type = None     # Node type (token if < 256, symbol if >= 256)
+    type = None  # Node type (token if < 256, symbol if >= 256)
     content = None  # Optional content matching pattern
-    name = None     # Optional name used to store match in results dict
+    name = None  # Optional name used to store match in results dict
 
     def __new__(cls, *args, **kwds):
         """Constructor that prevents BasePattern from being instantiated."""
@@ -542,7 +543,6 @@ class LeafPattern(BasePattern):
 
 
 class NodePattern(BasePattern):
-
     wildcards = False
 
     def __init__(self, type=None, content=None, name=None):
@@ -603,7 +603,6 @@ class NodePattern(BasePattern):
 
 
 class WildcardPattern(BasePattern):
-
     """
     A wildcard pattern can match zero or more nodes.
 
@@ -645,7 +644,7 @@ class WildcardPattern(BasePattern):
             # Check sanity of alternatives
             assert len(content), repr(content)  # Can't have zero alternatives
             for alt in content:
-                assert len(alt), repr(alt) # Can have empty alternatives
+                assert len(alt), repr(alt)  # Can have empty alternatives
         self.content = content
         self.min = min
         self.max = max
@@ -660,13 +659,13 @@ class WildcardPattern(BasePattern):
         if self.min == 1 and self.max == 1:
             if self.content is None:
                 return NodePattern(name=self.name)
-            if subpattern is not None and  self.name == subpattern.name:
+            if subpattern is not None and self.name == subpattern.name:
                 return subpattern.optimize()
         if (self.min <= 1 and isinstance(subpattern, WildcardPattern) and
             subpattern.min <= 1 and self.name == subpattern.name):
             return WildcardPattern(subpattern.content,
-                                   self.min*subpattern.min,
-                                   self.max*subpattern.max,
+                                   self.min * subpattern.min,
+                                   self.max * subpattern.max,
                                    subpattern.name)
         return self
 
@@ -783,7 +782,7 @@ class WildcardPattern(BasePattern):
         if count < self.max:
             for alt in self.content:
                 for c0, r0 in generate_matches(alt, nodes):
-                    for c1, r1 in self._recursive_matches(nodes[c0:], count+1):
+                    for c1, r1 in self._recursive_matches(nodes[c0:], count + 1):
                         r = {}
                         r.update(r0)
                         r.update(r1)

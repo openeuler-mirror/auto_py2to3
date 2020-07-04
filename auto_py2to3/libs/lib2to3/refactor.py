@@ -10,7 +10,6 @@ provides infrastructure to write your own refactoring tool.
 
 __author__ = "Guido van Rossum <guido@python.org>"
 
-
 # Python imports
 import io
 import os
@@ -59,7 +58,7 @@ def _get_head_types(pat):
     if isinstance(pat, pytree.NegatedPattern):
         if pat.content:
             return _get_head_types(pat.content)
-        raise _EveryNode # Negated Patterns don't have a type
+        raise _EveryNode  # Negated Patterns don't have a type
 
     if isinstance(pat, pytree.WildcardPattern):
         # Recurse on each node in content
@@ -69,7 +68,7 @@ def _get_head_types(pat):
                 r.update(_get_head_types(x))
         return r
 
-    raise Exception("Oh no! I don't understand pattern %s" %(pat))
+    raise Exception("Oh no! I don't understand pattern %s" % (pat))
 
 
 def _get_headnode_dict(fixer_list):
@@ -104,6 +103,7 @@ def get_fixers_from_package(pkg_name):
     return [pkg_name + "." + fix_name
             for fix_name in get_all_fix_names(pkg_name, False)]
 
+
 def _identity(obj):
     return obj
 
@@ -111,9 +111,11 @@ def _identity(obj):
 def _detect_future_features(source):
     have_docstring = False
     gen = tokenize.generate_tokens(io.StringIO(source).readline)
+
     def advance():
         tok = next(gen)
         return tok[0], tok[1]
+
     ignore = frozenset({token.NEWLINE, tokenize.NL, token.COMMENT})
     features = set()
     try:
@@ -153,12 +155,11 @@ class FixerError(Exception):
 
 
 class RefactoringTool(object):
+    _default_options = {"print_function": False,
+                        "write_unchanged_files": False}
 
-    _default_options = {"print_function" : False,
-                        "write_unchanged_files" : False}
-
-    CLASS_PREFIX = "Fix" # The prefix for fixer classes
-    FILE_PREFIX = "fix_" # The prefix for modules with a fixer within
+    CLASS_PREFIX = "Fix"  # The prefix for fixer classes
+    FILE_PREFIX = "fix_"  # The prefix for modules with a fixer within
 
     def __init__(self, fixer_names, options=None, explicit=None):
         """Initializer.
@@ -190,11 +191,10 @@ class RefactoringTool(object):
                                     logger=self.logger)
         self.pre_order, self.post_order = self.get_fixers()
 
-
         self.files = []  # List of files that were or should be modified
 
         self.BM = bm.BottomMatcher()
-        self.bmi_pre_order = [] # Bottom Matcher incompatible fixers
+        self.bmi_pre_order = []  # Bottom Matcher incompatible fixers
         self.bmi_post_order = []
 
         for fixer in chain(self.post_order, self.pre_order):
@@ -209,8 +209,6 @@ class RefactoringTool(object):
 
         self.bmi_pre_order_heads = _get_headnode_dict(self.bmi_pre_order)
         self.bmi_post_order_heads = _get_headnode_dict(self.bmi_post_order)
-
-
 
     def get_fixers(self):
         """Inspects the options to load the requested patterns and handlers.
@@ -235,7 +233,7 @@ class RefactoringTool(object):
                 raise FixerError("Can't find %s.%s" % (fix_name, class_name)) from None
             fixer = fix_class(self.options, self.fixer_log)
             if fixer.explicit and self.explicit is not True and \
-                    fix_mod_path not in self.explicit:
+                fix_mod_path not in self.explicit:
                 self.log_message("Skipping optional fixer: %s", fix_name)
                 continue
 
@@ -323,7 +321,7 @@ class RefactoringTool(object):
         if input is None:
             # Reading the file failed.
             return
-        input += "\n" # Silence certain parse errors
+        input += "\n"  # Silence certain parse errors
         if doctests_only:
             self.log_debug("Refactoring doctests in %s", filename)
             output = self.refactor_docstring(input, filename)
@@ -402,7 +400,7 @@ class RefactoringTool(object):
         for fixer in chain(self.pre_order, self.post_order):
             fixer.start_tree(tree, name)
 
-        #use traditional matching for the incompatible fixers
+        # use traditional matching for the incompatible fixers
         self.traverse_by(self.bmi_pre_order_heads, tree.pre_order())
         self.traverse_by(self.bmi_post_order_heads, tree.post_order())
 
@@ -412,12 +410,12 @@ class RefactoringTool(object):
         while any(match_set.values()):
             for fixer in self.BM.fixers:
                 if fixer in match_set and match_set[fixer]:
-                    #sort by depth; apply fixers from bottom(of the AST) to top
+                    # sort by depth; apply fixers from bottom(of the AST) to top
                     match_set[fixer].sort(key=pytree.Base.depth, reverse=True)
 
                     if fixer.keep_line_order:
-                        #some fixers(eg fix_imports) must be applied
-                        #with the original file's line order
+                        # some fixers(eg fix_imports) must be applied
+                        # with the original file's line order
                         match_set[fixer].sort(key=pytree.Base.get_lineno)
 
                     for node in list(match_set[fixer]):
@@ -441,7 +439,7 @@ class RefactoringTool(object):
                             new = fixer.transform(node, results)
                             if new is not None:
                                 node.replace(new)
-                                #new.fixers_applied.append(fixer)
+                                # new.fixers_applied.append(fixer)
                                 for node in new.post_order():
                                     # do not apply the fixer again to
                                     # this or any subnode
@@ -454,7 +452,7 @@ class RefactoringTool(object):
                                 new_matches = self.BM.run(new.leaves())
                                 for fxr in new_matches:
                                     if not fxr in match_set:
-                                        match_set[fxr]=[]
+                                        match_set[fxr] = []
 
                                     match_set[fxr].extend(new_matches[fxr])
 
@@ -593,8 +591,8 @@ class RefactoringTool(object):
         if self.refactor_tree(tree, filename):
             new = str(tree).splitlines(keepends=True)
             # Undo the adjustment of the line numbers in wrap_toks() below.
-            clipped, new = new[:lineno-1], new[lineno-1:]
-            assert clipped == ["\n"] * (lineno-1), clipped
+            clipped, new = new[:lineno - 1], new[lineno - 1:]
+            assert clipped == ["\n"] * (lineno - 1), clipped
             if not new[-1].endswith("\n"):
                 new[-1] += "\n"
             block = [indent + self.PS1 + new.pop(0)]
@@ -647,7 +645,6 @@ class RefactoringTool(object):
             # that the column numbers for doctests are relative to the
             # end of the prompt string (PS1 or PS2).
             yield type, value, (line0, col0), (line1, col1), line_text
-
 
     def gen_lines(self, block, indent):
         """Generates lines as expected by tokenize from a list of lines.

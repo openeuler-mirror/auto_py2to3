@@ -11,6 +11,7 @@ from ..pgen2 import token
 from .. import fixer_base
 from ..fixer_util import Call, Comma, parenthesize
 
+
 class FixApply(fixer_base.BaseFix):
     BM_compatible = True
 
@@ -63,8 +64,8 @@ class FixApply(fixer_base.BaseFix):
             l_newargs.extend([Comma(),
                               pytree.Leaf(token.DOUBLESTAR, "**"),
                               kwds])
-            l_newargs[-2].prefix = " " # that's the ** token
+            l_newargs[-2].prefix = " "  # that's the ** token
         # XXX Sometimes we could be cleverer, e.g. apply(f, (x, y) + t)
         # can be translated into f(x, y, *t) instead of f(*(x, y) + t)
-        #new = pytree.Node(syms.power, (func, ArgList(l_newargs)))
+        # new = pytree.Node(syms.power, (func, ArgList(l_newargs)))
         return Call(func, l_newargs, prefix=prefix)

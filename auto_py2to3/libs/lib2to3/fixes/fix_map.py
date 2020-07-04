@@ -89,12 +89,12 @@ class FixMap(fixer_base.ConditionalFix):
                 if "args" in results:
                     args = results["args"]
                     if args.type == syms.trailer and \
-                       args.children[1].type == syms.arglist and \
-                       args.children[1].children[0].type == token.NAME and \
-                       args.children[1].children[0].value == "None":
+                        args.children[1].type == syms.arglist and \
+                        args.children[1].children[0].type == token.NAME and \
+                        args.children[1].children[0].value == "None":
                         self.warning(node, "cannot convert map(None, ...) "
-                                     "with multiple arguments because map() "
-                                     "now truncates to the shortest sequence")
+                                           "with multiple arguments because map() "
+                                           "now truncates to the shortest sequence")
                         return
 
                     new = Node(syms.power, [Name("map"), args.clone()])

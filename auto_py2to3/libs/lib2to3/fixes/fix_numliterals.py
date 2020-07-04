@@ -16,7 +16,7 @@ class FixNumliterals(fixer_base.BaseFix):
 
     def match(self, node):
         # Override
-        return (node.value.startswith("0") or node.value[-1] in "Ll")
+        return node.value.startswith("0") or node.value[-1] in "Ll"
 
     def transform(self, node, results):
         val = node.value

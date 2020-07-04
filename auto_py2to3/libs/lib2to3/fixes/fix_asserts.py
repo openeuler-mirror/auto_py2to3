@@ -24,7 +24,6 @@ NAMES = dict(
 
 
 class FixAsserts(BaseFix):
-
     PATTERN = """
               power< any+ trailer< '.' meth=(%s)> any* >
               """ % '|'.join(map(repr, NAMES))

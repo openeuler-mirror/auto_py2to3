@@ -5,10 +5,10 @@
 from .. import fixer_base
 from ..fixer_util import Name, attr_chain
 
-MAPPING = {'StringIO':  'io',
+MAPPING = {'StringIO': 'io',
            'cStringIO': 'io',
            'cPickle': 'pickle',
-           '__builtin__' : 'builtins',
+           '__builtin__': 'builtins',
            'copy_reg': 'copyreg',
            'Queue': 'queue',
            'SocketServer': 'socketserver',
@@ -42,20 +42,20 @@ MAPPING = {'StringIO':  'io',
            'DocXMLRPCServer': 'xmlrpc.server',
            'SimpleXMLRPCServer': 'xmlrpc.server',
            'httplib': 'http.client',
-           'htmlentitydefs' : 'html.entities',
-           'HTMLParser' : 'html.parser',
+           'htmlentitydefs': 'html.entities',
+           'HTMLParser': 'html.parser',
            'Cookie': 'http.cookies',
            'cookielib': 'http.cookiejar',
            'BaseHTTPServer': 'http.server',
            'SimpleHTTPServer': 'http.server',
            'CGIHTTPServer': 'http.server',
-           #'test.test_support': 'test.support',
+           # 'test.test_support': 'test.support',
            'commands': 'subprocess',
-           'UserString' : 'collections',
-           'UserList' : 'collections',
-           'urlparse' : 'urllib.parse',
-           'robotparser' : 'urllib.robotparser',
-}
+           'UserString': 'collections',
+           'UserList': 'collections',
+           'urlparse': 'urllib.parse',
+           'robotparser': 'urllib.robotparser',
+           }
 
 
 def alternates(members):
@@ -83,7 +83,6 @@ def build_pattern(mapping=MAPPING):
 
 
 class FixImports(fixer_base.BaseFix):
-
     BM_compatible = True
     keep_line_order = True
     # This is overridden in fix_imports2.
@@ -110,7 +109,7 @@ class FixImports(fixer_base.BaseFix):
             # Module usage could be in the trailer of an attribute lookup, so we
             # might have nested matches when "bare_with_attr" is present.
             if "bare_with_attr" not in results and \
-                    any(match(obj) for obj in attr_chain(node, "parent")):
+                any(match(obj) for obj in attr_chain(node, "parent")):
                 return False
             return results
         return False

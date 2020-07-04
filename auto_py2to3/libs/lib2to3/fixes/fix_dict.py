@@ -34,7 +34,6 @@ from .. import fixer_base
 from ..fixer_util import Name, Call, Dot
 from .. import fixer_util
 
-
 iter_exempt = fixer_util.consuming_calls | {"iter"}
 
 
@@ -53,7 +52,7 @@ class FixDict(fixer_base.BaseFix):
 
     def transform(self, node, results):
         head = results["head"]
-        method = results["method"][0] # Extract node for method name
+        method = results["method"][0]  # Extract node for method name
         tail = results["tail"]
         syms = self.syms
         method_name = method.value
@@ -92,8 +91,8 @@ class FixDict(fixer_base.BaseFix):
             return False
         results = {}
         if (node.parent.parent is not None and
-               self.p1.match(node.parent.parent, results) and
-               results["node"] is node):
+            self.p1.match(node.parent.parent, results) and
+            results["node"] is node):
             if isiter:
                 # iter(d.iterkeys()) -> iter(d.keys()), etc.
                 return results["func"].value in iter_exempt
