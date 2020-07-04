@@ -6,7 +6,7 @@ import click
 
 
 @click.command()
-def main(args=None):
+def main():
     """Console script for auto_py2to3."""
     click.echo("Replace this message by putting your code into "
                "auto_py2to3.cli.main")
