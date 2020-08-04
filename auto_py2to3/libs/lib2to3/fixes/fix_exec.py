@@ -25,7 +25,7 @@ class FixExec(fixer_base.BaseFix):
 
     def transform(self, node, results):
         assert results
-        syms = self.syms
+        sym_s = self.syms
         a = results["a"]
         b = results.get("b")
         c = results.get("c")

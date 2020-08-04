@@ -25,12 +25,12 @@ The following cases will be converted:
 from .. import pytree
 from ..pgen2 import token
 from .. import fixer_base
-from ..fixer_util import Assign, Attr, Name, is_tuple, is_list, syms
+from ..fixer_util import Assign, Attr, Name, is_tuple, is_list, sym_s
 
 
 def find_excepts(nodes):
     for i, n in enumerate(nodes):
-        if n.type == syms.except_clause:
+        if n.type == sym_s.except_clause:
             if n.children[0].value == 'except':
                 yield (n, nodes[i + 2])
 
@@ -47,7 +47,7 @@ class FixExcept(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        syms = self.syms
+        sym_s = self.syms
 
         tail = [n.clone() for n in results["tail"]]
 
@@ -70,6 +70,7 @@ class FixExcept(fixer_base.BaseFix):
                     #  and indents
                     # TODO(cwinter) suite-cleanup
                     suite_stmts = e_suite.children
+                    i = 0
                     for i, stmt in enumerate(suite_stmts):
                         if isinstance(stmt, pytree.Node):
                             break
@@ -81,7 +82,6 @@ class FixExcept(fixer_base.BaseFix):
                     else:
                         assign = Assign(target, new_N)
 
-                    # TODO(cwinter) stopgap until children becomes a smart list
                     for child in reversed(suite_stmts[:i]):
                         e_suite.insert_child(0, child)
                     e_suite.insert_child(i, assign)
@@ -90,6 +90,5 @@ class FixExcept(fixer_base.BaseFix):
                     # not so much.
                     N.prefix = " "
 
-        # TODO(cwinter) fix this when children becomes a smart list
         children = [c.clone() for c in node.children[:3]] + try_cleanup + tail
         return pytree.Node(node.type, children)

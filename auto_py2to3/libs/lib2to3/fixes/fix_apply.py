@@ -30,7 +30,7 @@ class FixApply(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        syms = self.syms
+        sym_s = self.syms
         assert results
         func = results["func"]
         args = results["args"]
@@ -48,8 +48,8 @@ class FixApply(fixer_base.BaseFix):
             return  # Make no change.
         prefix = node.prefix
         func = func.clone()
-        if (func.type not in (token.NAME, syms.atom) and
-            (func.type != syms.power or
+        if (func.type not in (token.NAME, sym_s.atom) and
+            (func.type != sym_s.power or
              func.children[-2].type == token.DOUBLESTAR)):
             # Need to parenthesize
             func = parenthesize(func)
@@ -64,8 +64,5 @@ class FixApply(fixer_base.BaseFix):
             l_newargs.extend([Comma(),
                               pytree.Leaf(token.DOUBLESTAR, "**"),
                               kwds])
-            l_newargs[-2].prefix = " "  # that's the ** token
-        # XXX Sometimes we could be cleverer, e.g. apply(f, (x, y) + t)
-        # can be translated into f(x, y, *t) instead of f(*(x, y) + t)
-        # new = pytree.Node(syms.power, (func, ArgList(l_newargs)))
+            l_newargs[-2].prefix = " "
         return Call(func, l_newargs, prefix=prefix)

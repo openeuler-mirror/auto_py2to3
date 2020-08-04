@@ -24,8 +24,8 @@ class FixExecfile(fixer_base.BaseFix):
     def transform(self, node, results):
         assert results
         filename = results["filename"]
-        globals = results.get("globals")
-        locals = results.get("locals")
+        tmp_globals = results.get("globals")
+        tmp_locals = results.get("locals")
 
         # Copy over the prefix from the right parentheses end of the execfile
         # call.
@@ -46,8 +46,8 @@ class FixExecfile(fixer_base.BaseFix):
         compile_call = Call(Name("compile"), compile_args, "")
         # Finally, replace the execfile call with an exec call.
         args = [compile_call]
-        if globals is not None:
-            args.extend([Comma(), globals.clone()])
-        if locals is not None:
-            args.extend([Comma(), locals.clone()])
+        if tmp_globals is not None:
+            args.extend([Comma(), tmp_globals.clone()])
+        if tmp_locals is not None:
+            args.extend([Comma(), tmp_locals.clone()])
         return Call(Name("exec"), args, prefix=node.prefix)

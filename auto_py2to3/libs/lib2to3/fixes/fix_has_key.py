@@ -70,8 +70,8 @@ class FixHasKey(fixer_base.BaseFix):
 
     def transform(self, node, results):
         assert results
-        syms = self.syms
-        if (node.parent.type == syms.not_test and
+        sym_s = self.syms
+        if (node.parent.type == sym_s.not_test and
             self.pattern.match(node.parent)):
             # Don't transform a node matching the first alternative of the
             # pattern when its parent matches the second alternative
@@ -84,26 +84,26 @@ class FixHasKey(fixer_base.BaseFix):
         after = results.get("after")
         if after:
             after = [n.clone() for n in after]
-        if arg.type in (syms.comparison, syms.not_test, syms.and_test,
-                        syms.or_test, syms.test, syms.lambdef, syms.argument):
+        if arg.type in (sym_s.comparison, sym_s.not_test, sym_s.and_test,
+                        sym_s.or_test, sym_s.test, sym_s.lambdef, sym_s.argument):
             arg = parenthesize(arg)
         if len(before) == 1:
             before = before[0]
         else:
-            before = pytree.Node(syms.power, before)
+            before = pytree.Node(sym_s.power, before)
         before.prefix = " "
         n_op = Name("in", prefix=" ")
         if negation:
             n_not = Name("not", prefix=" ")
-            n_op = pytree.Node(syms.comp_op, (n_not, n_op))
-        new = pytree.Node(syms.comparison, (arg, n_op, before))
+            n_op = pytree.Node(sym_s.comp_op, (n_not, n_op))
+        new = pytree.Node(sym_s.comparison, (arg, n_op, before))
         if after:
             new = parenthesize(new)
-            new = pytree.Node(syms.power, (new,) + tuple(after))
-        if node.parent.type in (syms.comparison, syms.expr, syms.xor_expr,
-                                syms.and_expr, syms.shift_expr,
-                                syms.arith_expr, syms.term,
-                                syms.factor, syms.power):
+            new = pytree.Node(sym_s.power, (new,) + tuple(after))
+        if node.parent.type in (sym_s.comparison, sym_s.expr, sym_s.xor_expr,
+                                sym_s.and_expr, sym_s.shift_expr,
+                                sym_s.arith_expr, sym_s.term,
+                                sym_s.factor, sym_s.power):
             new = parenthesize(new)
         new.prefix = prefix
         return new

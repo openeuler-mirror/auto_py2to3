@@ -36,7 +36,7 @@ class FixRaise(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        syms = self.syms
+        sym_s = self.syms
 
         exc = results["exc"].clone()
         if exc.type == token.STRING:
@@ -59,7 +59,7 @@ class FixRaise(fixer_base.BaseFix):
 
         if "val" not in results:
             # One-argument raise
-            new = pytree.Node(syms.raise_stmt, [Name("raise"), exc])
+            new = pytree.Node(sym_s.raise_stmt, [Name("raise"), exc])
             new.prefix = node.prefix
             return new
 
@@ -81,10 +81,10 @@ class FixRaise(fixer_base.BaseFix):
             if val.type != token.NAME or val.value != "None":
                 e = Call(exc, args)
             with_tb = Attr(e, Name('with_traceback')) + [ArgList([tb])]
-            new = pytree.Node(syms.simple_stmt, [Name("raise")] + with_tb)
+            new = pytree.Node(sym_s.simple_stmt, [Name("raise")] + with_tb)
             new.prefix = node.prefix
             return new
         else:
-            return pytree.Node(syms.raise_stmt,
+            return pytree.Node(sym_s.raise_stmt,
                                [Name("raise"), Call(exc, args)],
                                prefix=node.prefix)

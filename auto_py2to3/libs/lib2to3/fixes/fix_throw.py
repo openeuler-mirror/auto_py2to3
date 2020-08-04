@@ -25,7 +25,7 @@ class FixThrow(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        syms = self.syms
+        sym_s = self.syms
 
         exc = results["exc"].clone()
         if exc.type is token.STRING:
@@ -52,6 +52,6 @@ class FixThrow(fixer_base.BaseFix):
 
             e = Call(exc, args)
             with_tb = Attr(e, Name('with_traceback')) + [ArgList([tb])]
-            throw_args.replace(pytree.Node(syms.power, with_tb))
+            throw_args.replace(pytree.Node(sym_s.power, with_tb))
         else:
             throw_args.replace(Call(exc, args))

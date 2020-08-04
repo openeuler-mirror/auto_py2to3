@@ -94,7 +94,6 @@ class FixTupleParams(fixer_base.BaseFix):
         for line in new_lines:
             line.parent = suite[0]
 
-        # TODO(cwinter) suite-cleanup
         after = start
         if start == 0:
             new_lines[0].prefix = " "

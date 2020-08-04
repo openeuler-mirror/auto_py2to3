@@ -19,8 +19,8 @@ class MinNode(object):
     pattern tree during the conversion to sets of leaf-to-root
     subpatterns"""
 
-    def __init__(self, type=None, name=None):
-        self.type = type
+    def __init__(self, _type=None, name=None):
+        self.type = _type
         self.name = name
         self.children = []
         self.leaf = False
@@ -220,9 +220,7 @@ def reduce_tree(node, parent=None):
                 # reduce to a single occurrence i.e. do nothing
                 pass
             else:
-                # TODO: handle {min, max} repeaters
                 raise NotImplementedError
-                pass
 
         # add children
         if details_node and new_node is not None:

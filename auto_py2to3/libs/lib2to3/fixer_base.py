@@ -7,6 +7,8 @@
 import itertools
 
 # Local imports
+from abc import ABC
+
 from .patcomp import PatternCompiler
 from . import pygram
 from .fixer_util import does_tree_import
@@ -42,7 +44,7 @@ class BaseFix(object):
     # manually
 
     # Shortcut for access to Python grammar symbols
-    syms = pygram.python_symbols
+    sym_s = pygram.python_symbols
 
     def __init__(self, options, log):
         """Initializer.  Subclass may override.
@@ -52,6 +54,7 @@ class BaseFix(object):
             that could be used to customize the fixer through the command line.
             log: a list to append warnings and other messages to.
         """
+        self.first_log = False
         self.options = options
         self.log = log
         self.compile_pattern()
@@ -115,7 +118,6 @@ class BaseFix(object):
 
     def log_message(self, message):
         if self.first_log:
-            self.first_log = False
             self.log.append("### In file %s ###" % self.filename)
         self.log.append(message)
 
@@ -166,15 +168,18 @@ class BaseFix(object):
         pass
 
 
-class ConditionalFix(BaseFix):
+class ConditionalFix(BaseFix, ABC):
     """ Base class for fixers which not execute if an import is found. """
 
     # This is the name of the import which, if found, will cause the test to be skipped
     skip_on = None
 
+    def __init__(self, options, log):
+        super().__init__(options, log)
+        self._should_skip = None
+
     def start_tree(self, *args):
         super(ConditionalFix, self).start_tree(*args)
-        self._should_skip = None
 
     def should_skip(self, node):
         if self._should_skip is not None:

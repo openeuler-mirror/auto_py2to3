@@ -127,11 +127,6 @@ def ListComp(xp, fp, it, test=None):
 def FromImport(package_name, name_leafs):
     """ Return an import statement in the form:
         from package import name_leafs"""
-    # XXX: May not handle dotted imports properly (eg, package_name='foo.bar')
-    # assert package_name == '.' or '.' not in package_name, "FromImport has "\
-    #       "not been tested with dotted package names -- use at your own "\
-    #       "peril!"
-
     for leaf in name_leafs:
         # Pull the leaves out of their old tree
         leaf.remove()
@@ -221,31 +216,10 @@ def attr_chain(obj, attr):
     Yields:
         Each successive object in the chain.
     """
-    next = getattr(obj, attr)
-    while next:
-        yield next
-        next = getattr(next, attr)
-
-
-p0 = """for_stmt< 'for' any 'in' node=any ':' any* >
-        | comp_for< 'for' any 'in' node=any any* >
-     """
-p1 = """
-power<
-    ( 'iter' | 'list' | 'tuple' | 'sorted' | 'set' | 'sum' |
-      'any' | 'all' | 'enumerate' | (any* trailer< '.' 'join' >) )
-    trailer< '(' node=any ')' >
-    any*
->
-"""
-p2 = """
-power<
-    ( 'sorted' | 'enumerate' )
-    trailer< '(' arglist<node=any any*> ')' >
-    any*
->
-"""
-pats_built = False
+    _next = getattr(obj, attr)
+    while _next:
+        yield _next
+        _next = getattr(_next, attr)
 
 
 def in_special_context(node):
@@ -254,7 +228,25 @@ def in_special_context(node):
         or an iterator).
         See test_map_nochange in test_fixers.py for some examples and tests.
         """
-    global p0, p1, p2, pats_built
+    p0 = """for_stmt< 'for' any 'in' node=any ':' any* >
+            | comp_for< 'for' any 'in' node=any any* >
+         """
+    p1 = """
+    power<
+        ( 'iter' | 'list' | 'tuple' | 'sorted' | 'set' | 'sum' |
+          'any' | 'all' | 'enumerate' | (any* trailer< '.' 'join' >) )
+        trailer< '(' node=any ')' >
+        any*
+    >
+    """
+    p2 = """
+    power<
+        ( 'sorted' | 'enumerate' )
+        trailer< '(' arglist<node=any any*> ')' >
+        any*
+    >
+    """
+    pats_built = False
     if not pats_built:
         p0 = patcomp.compile_pattern(p0)
         p1 = patcomp.compile_pattern(p1)
