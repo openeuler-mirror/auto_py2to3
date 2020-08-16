@@ -51,9 +51,9 @@ def _get_head_types(pat):
         # NodePatters must either have no type and no content
         #   or a type and content -- so they don't get any farther
         # Always return leafs
-        if pat.type is None:
+        if pat._type is None:
             raise _EveryNode
-        return {pat.type}
+        return {pat._type}
 
     if isinstance(pat, pytree.NegatedPattern):
         if pat.content:
@@ -248,7 +248,7 @@ class RefactoringTool(object):
         key_func = operator.attrgetter("run_order")
         pre_order_fixers.sort(key=key_func)
         post_order_fixers.sort(key=key_func)
-        return (pre_order_fixers, post_order_fixers)
+        return pre_order_fixers, post_order_fixers
 
     def log_error(self, msg, *args, **kwds):
         """Called when an error occurs."""

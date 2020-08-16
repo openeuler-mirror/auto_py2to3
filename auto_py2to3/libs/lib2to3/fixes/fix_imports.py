@@ -62,7 +62,9 @@ def alternates(members):
     return "(" + "|".join(map(repr, members)) + ")"
 
 
-def build_pattern(mapping=MAPPING):
+def build_pattern(mapping=None):
+    if mapping is None:
+        mapping = MAPPING
     mod_list = ' | '.join(["module_name='%s'" % key for key in mapping])
     bare_names = alternates(mapping.keys())
 
@@ -92,6 +94,10 @@ class FixImports(fixer_base.BaseFix):
     # renames into relative imports.
     run_order = 6
 
+    def __init__(self, options, log):
+        super().__init__(options, log)
+        self.replace = {}
+
     def build_pattern(self):
         return "|".join(build_pattern(self.mapping))
 
@@ -108,15 +114,13 @@ class FixImports(fixer_base.BaseFix):
         if results:
             # Module usage could be in the trailer of an attribute lookup, so we
             # might have nested matches when "bare_with_attr" is present.
-            if "bare_with_attr" not in results and \
-                any(match(obj) for obj in attr_chain(node, "parent")):
+            if "bare_with_attr" not in results and any(match(obj) for obj in attr_chain(node, "parent")):
                 return False
             return results
         return False
 
     def start_tree(self, tree, filename):
         super(FixImports, self).start_tree(tree, filename)
-        self.replace = {}
 
     def transform(self, node, results):
         import_mod = results.get("module_name")

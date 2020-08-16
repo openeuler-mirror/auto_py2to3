@@ -25,12 +25,12 @@ The following cases will be converted:
 from .. import pytree
 from ..pgen2 import token
 from .. import fixer_base
-from ..fixer_util import Assign, Attr, Name, is_tuple, is_list, sym_s
+from ..fixer_util import Assign, Attr, Name, is_tuple, is_list, syms
 
 
 def find_excepts(nodes):
     for i, n in enumerate(nodes):
-        if n.type == sym_s.except_clause:
+        if n.type == syms.except_clause:
             if n.children[0].value == 'except':
                 yield (n, nodes[i + 2])
 
@@ -47,8 +47,6 @@ class FixExcept(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        sym_s = self.syms
-
         tail = [n.clone() for n in results["tail"]]
 
         try_cleanup = [ch.clone() for ch in results["cleanup"]]
@@ -68,7 +66,6 @@ class FixExcept(fixer_base.BaseFix):
                     # Insert "old_N = new_N" as the first statement in
                     #  the except body. This loop skips leading whitespace
                     #  and indents
-                    # TODO(cwinter) suite-cleanup
                     suite_stmts = e_suite.children
                     i = 0
                     for i, stmt in enumerate(suite_stmts):

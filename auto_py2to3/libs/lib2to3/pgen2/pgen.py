@@ -25,6 +25,7 @@ class ParserGenerator(object):
             close_stream()
         self.first = {}  # map from symbol name to set of tokens
         self.addfirstsets()
+        self.type, self.value, self.begin, self.end, self.line = None, None, None, None, None
 
     def make_grammar(self):
         c = PgenGrammar()
@@ -56,12 +57,10 @@ class ParserGenerator(object):
         first = {}
         for label in sorted(rawfirst):
             ilabel = self.make_label(c, label)
-            ##assert ilabel not in first # XXX failed on <> ... !=
             first[ilabel] = 1
         return first
 
     def make_label(self, c, label):
-        # XXX Maybe this should be a method on a subclass of converter?
         ilabel = len(c.labels)
         if label[0].isalpha():
             # Either a symbol name or a named token

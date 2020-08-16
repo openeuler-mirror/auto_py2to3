@@ -38,7 +38,7 @@ class MinNode(object):
         node = self
         subp = []
         while node:
-            if node.type == TYPE_ALTERNATIVES:
+            if node._type == TYPE_ALTERNATIVES:
                 node.alternatives.append(subp)
                 if len(node.alternatives) == len(node.children):
                     # last alternative
@@ -51,7 +51,7 @@ class MinNode(object):
                     subp = None
                     break
 
-            if node.type == TYPE_GROUP:
+            if node._type == TYPE_GROUP:
                 node.group.append(subp)
                 # probably should check the number of leaves
                 if len(node.group) == len(node.children):
@@ -64,11 +64,11 @@ class MinNode(object):
                     subp = None
                     break
 
-            if node.type == token_labels.NAME and node.name:
+            if node._type == token_labels.NAME and node.name:
                 # in case of type=name, use the name instead
                 subp.append(node.name)
             else:
-                subp.append(node.type)
+                subp.append(node._type)
 
             node = node.parent
         return subp
@@ -112,18 +112,18 @@ def reduce_tree(node, parent=None):
 
     new_node = None
     # switch on the node type
-    if node.type == syms.Matcher:
+    if node._type == syms.Matcher:
         # skip
         node = node.children[0]
 
-    if node.type == syms.Alternatives:
+    if node._type == syms.Alternatives:
         # 2 cases
         if len(node.children) <= 2:
             # just a single 'Alternative', skip this node
             new_node = reduce_tree(node.children[0], parent)
         else:
             # real alternatives
-            new_node = MinNode(type=TYPE_ALTERNATIVES)
+            new_node = MinNode(_type=TYPE_ALTERNATIVES)
             # skip odd children('|' tokens)
             for child in node.children:
                 if node.children.index(child) % 2:
@@ -131,10 +131,10 @@ def reduce_tree(node, parent=None):
                 reduced = reduce_tree(child, new_node)
                 if reduced is not None:
                     new_node.children.append(reduced)
-    elif node.type == syms.Alternative:
+    elif node._type == syms.Alternative:
         if len(node.children) > 1:
 
-            new_node = MinNode(type=TYPE_GROUP)
+            new_node = MinNode(_type=TYPE_GROUP)
             for child in node.children:
                 reduced = reduce_tree(child, new_node)
                 if reduced:
@@ -146,9 +146,8 @@ def reduce_tree(node, parent=None):
         else:
             new_node = reduce_tree(node.children[0], parent)
 
-    elif node.type == syms.Unit:
-        if (isinstance(node.children[0], pytree.Leaf) and
-            node.children[0].value == '('):
+    elif node._type == syms.Unit:
+        if isinstance(node.children[0], pytree.Leaf) and node.children[0].value == '(':
             # skip parentheses
             return reduce_tree(node.children[1], parent)
         if ((isinstance(node.children[0], pytree.Leaf) and
@@ -168,13 +167,13 @@ def reduce_tree(node, parent=None):
         has_variable_name = False
 
         for child in node.children:
-            if child.type == syms.Details:
+            if child._type == syms.Details:
                 leaf = False
                 details_node = child
-            elif child.type == syms.Repeater:
+            elif child._type == syms.Repeater:
                 has_repeater = True
                 repeater_node = child
-            elif child.type == syms.Alternatives:
+            elif child._type == syms.Alternatives:
                 alternatives_node = child
             if hasattr(child, 'value') and child.value == '=':  # variable name
                 has_variable_name = True
@@ -190,25 +189,25 @@ def reduce_tree(node, parent=None):
             name_leaf = node.children[0]
 
         # set node type
-        if name_leaf.type == token_labels.NAME:
+        if name_leaf._type == token_labels.NAME:
             # (python) non-name or wildcard
             if name_leaf.value == 'any':
-                new_node = MinNode(type=TYPE_ANY)
+                new_node = MinNode(_type=TYPE_ANY)
             else:
                 if hasattr(token_labels, name_leaf.value):
-                    new_node = MinNode(type=getattr(token_labels, name_leaf.value))
+                    new_node = MinNode(_type=getattr(token_labels, name_leaf.value))
                 else:
-                    new_node = MinNode(type=getattr(pysyms, name_leaf.value))
+                    new_node = MinNode(_type=getattr(pysyms, name_leaf.value))
 
-        elif name_leaf.type == token_labels.STRING:
+        elif name_leaf._type == token_labels.STRING:
             # (python) name or character; remove the apostrophes from
             # the string value
             name = name_leaf.value.strip("'")
             if name in tokens:
-                new_node = MinNode(type=tokens[name])
+                new_node = MinNode(_type=tokens[name])
             else:
-                new_node = MinNode(type=token_labels.NAME, name=name)
-        elif name_leaf.type == syms.Alternatives:
+                new_node = MinNode(_type=token_labels.NAME, name=name)
+        elif name_leaf._type == syms.Alternatives:
             new_node = reduce_tree(alternatives_node, parent)
 
         # handle repeaters

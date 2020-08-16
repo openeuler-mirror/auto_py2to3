@@ -275,7 +275,7 @@ def detect_encoding(readline):
     If no encoding is specified, then the default of 'utf-8' will be returned.
     """
     bom_found = False
-    encoding = None
+    # encoding = None
     default = 'utf-8'
 
     def read_or_stop():
@@ -538,9 +538,7 @@ def generate_tokens(readline):
                         continue
 
                     if token == 'def':
-                        if (stashed
-                            and stashed[0] == NAME
-                            and stashed[1] == 'async'):
+                        if stashed and stashed[0] == NAME and stashed[1] == 'async':
                             async_def = True
                             async_def_indent = indents[-1]
 

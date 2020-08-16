@@ -25,7 +25,7 @@ class FixThrow(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        sym_s = self.syms
+        sym_s = self.sym_s
 
         exc = results["exc"].clone()
         if exc.type is token.STRING:

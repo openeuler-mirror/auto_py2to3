@@ -42,7 +42,7 @@ class Base(object):
     """
 
     # Default values for instance variables
-    type = None  # int: token number (< 256) or symbol number (>= 256)
+    _type = None  # int: token number (< 256) or symbol number (>= 256)
     parent = None  # Parent node pointer, or None
     children = ()  # Tuple of subnodes
     was_changed = False
@@ -210,7 +210,7 @@ class Base(object):
 class Node(Base):
     """Concrete implementation for interior nodes."""
 
-    def __init__(self, type, children,
+    def __init__(self, _type, children,
                  context=None,
                  prefix=None,
                  fixers_applied=None):
@@ -222,8 +222,8 @@ class Node(Base):
 
         As a side effect, the parent pointers of the children are updated.
         """
-        assert type >= 256, type
-        self.type = type
+        assert _type >= 256, _type
+        self._type = _type
         self.children = list(children)
         for ch in self.children:
             assert ch.parent is None, repr(ch)
@@ -238,7 +238,7 @@ class Node(Base):
     def __repr__(self):
         """Return a canonical string representation."""
         return "%s(%s, %r)" % (self.__class__.__name__,
-                               type_repr(self.type),
+                               type_repr(self._type),
                                self.children)
 
     def __unicode__(self):
@@ -254,11 +254,11 @@ class Node(Base):
 
     def _eq(self, other):
         """Compare two nodes for equality."""
-        return (self.type, self.children) == (other.type, other.children)
+        return (self._type, self.children) == (other._type, other.children)
 
     def clone(self):
         """Return a cloned (deep) copy of self."""
-        return Node(self.type, [ch.clone() for ch in self.children],
+        return Node(self._type, [ch.clone() for ch in self.children],
                     fixers_applied=self.fixers_applied)
 
     def post_order(self):
@@ -324,20 +324,22 @@ class Leaf(Base):
     lineno = 0  # Line where this token starts in the input
     column = 0  # Column where this token tarts in the input
 
-    def __init__(self, type, value,
+    def __init__(self, _type, value,
                  context=None,
                  prefix=None,
-                 fixers_applied=[]):
+                 fixers_applied=None):
         """
         Initializer.
 
         Takes a type constant (a token number < 256), a string value, and an
         optional context keyword argument.
         """
-        assert 0 <= type < 256, type
+        if not fixers_applied:
+            fixers_applied = []
+        assert 0 <= _type < 256, _type
         if context is not None:
             self._prefix, (self.lineno, self.column) = context
-        self.type = type
+        self._type = _type
         self.value = value
         if prefix is not None:
             self._prefix = prefix
@@ -346,7 +348,7 @@ class Leaf(Base):
     def __repr__(self):
         """Return a canonical string representation."""
         return "%s(%r, %r)" % (self.__class__.__name__,
-                               self.type,
+                               self._type,
                                self.value)
 
     def __unicode__(self):
@@ -362,11 +364,11 @@ class Leaf(Base):
 
     def _eq(self, other):
         """Compare two nodes for equality."""
-        return (self.type, self.value) == (other.type, other.value)
+        return (self._type, self.value) == (other._type, other.value)
 
     def clone(self):
         """Return a cloned (deep) copy of self."""
-        return Leaf(self.type, self.value,
+        return Leaf(self._type, self.value,
                     (self.prefix, (self.lineno, self.column)),
                     fixers_applied=self.fixers_applied)
 
@@ -402,15 +404,15 @@ def convert(gr, raw_node):
     grammar rule produces a new complete node, so that the tree is build
     strictly bottom-up.
     """
-    type, value, context, children = raw_node
-    if children or type in gr.number2symbol:
+    _type, value, context, children = raw_node
+    if children or _type in gr.number2symbol:
         # If there's exactly one child, return that child instead of
         # creating a new node.
         if len(children) == 1:
             return children[0]
-        return Node(type, children, context=context)
+        return Node(_type, children, context=context)
     else:
-        return Leaf(type, value, context=context)
+        return Leaf(_type, value, context=context)
 
 
 class BasePattern(object):
@@ -429,7 +431,7 @@ class BasePattern(object):
     """
 
     # Defaults for instance variables
-    type = None  # Node type (token if < 256, symbol if >= 256)
+    _type = None  # Node type (token if < 256, symbol if >= 256)
     content = None  # Optional content matching pattern
     name = None  # Optional name used to store match in results dict
 
@@ -439,7 +441,7 @@ class BasePattern(object):
         return object.__new__(cls)
 
     def __repr__(self):
-        args = [type_repr(self.type), self.content, self.name]
+        args = [type_repr(self._type), self.content, self.name]
         while args and args[-1] is None:
             del args[-1]
         return "%s(%s)" % (self.__class__.__name__, ", ".join(map(repr, args)))
@@ -463,7 +465,7 @@ class BasePattern(object):
 
         Default implementation for non-wildcard patterns.
         """
-        if self.type is not None and node.type != self.type:
+        if self._type is not None and node._type != self._type:
             return False
         if self.content is not None:
             r = None
@@ -500,7 +502,7 @@ class BasePattern(object):
 
 class LeafPattern(BasePattern):
 
-    def __init__(self, type=None, content=None, name=None):
+    def __init__(self, _type=None, content=None, name=None):
         """
         Initializer.  Takes optional type, content, and name.
 
@@ -512,11 +514,11 @@ class LeafPattern(BasePattern):
         If a name is given, the matching node is stored in the results
         dict under that key.
         """
-        if type is not None:
-            assert 0 <= type < 256, type
+        if _type is not None:
+            assert 0 <= _type < 256, _type
         if content is not None:
             assert isinstance(content, str), repr(content)
-        self.type = type
+        self._type = _type
         self.content = content
         self.name = name
 
@@ -545,7 +547,7 @@ class LeafPattern(BasePattern):
 class NodePattern(BasePattern):
     wildcards = False
 
-    def __init__(self, type=None, content=None, name=None):
+    def __init__(self, _type=None, content=None, name=None):
         """
         Initializer.  Takes optional type, content, and name.
 
@@ -561,8 +563,8 @@ class NodePattern(BasePattern):
         If a name is given, the matching node is stored in the results
         dict under that key.
         """
-        if type is not None:
-            assert type >= 256, type
+        if _type is not None:
+            assert _type >= 256, _type
         if content is not None:
             assert not isinstance(content, str), repr(content)
             content = list(content)
@@ -570,7 +572,7 @@ class NodePattern(BasePattern):
                 assert isinstance(item, BasePattern), (i, item)
                 if isinstance(item, WildcardPattern):
                     self.wildcards = True
-        self.type = type
+        self._type = _type
         self.content = content
         self.name = name
 
@@ -653,16 +655,15 @@ class WildcardPattern(BasePattern):
     def optimize(self):
         """Optimize certain stacked wildcard patterns."""
         subpattern = None
-        if (self.content is not None and
-            len(self.content) == 1 and len(self.content[0]) == 1):
+        if self.content is not None and len(self.content) == 1 and len(self.content[0]) == 1:
             subpattern = self.content[0][0]
         if self.min == 1 and self.max == 1:
             if self.content is None:
                 return NodePattern(name=self.name)
             if subpattern is not None and self.name == subpattern.name:
                 return subpattern.optimize()
-        if (self.min <= 1 and isinstance(subpattern, WildcardPattern) and
-            subpattern.min <= 1 and self.name == subpattern.name):
+        if self.min <= 1 and isinstance(subpattern,
+                                        WildcardPattern) and subpattern.min <= 1 and self.name == subpattern.name:
             return WildcardPattern(subpattern.content,
                                    self.min * subpattern.min,
                                    self.max * subpattern.max,

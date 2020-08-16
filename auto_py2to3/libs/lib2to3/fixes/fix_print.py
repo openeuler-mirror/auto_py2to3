@@ -73,7 +73,6 @@ class FixPrint(fixer_base.BaseFix):
         return n_stmt
 
     def add_kwarg(self, l_nodes, s_kwd, n_expr):
-        # XXX All this prefix-setting may lose comments (though rarely)
         n_expr.prefix = ""
         n_argument = pytree.Node(self.syms.argument,
                                  (Name(s_kwd),

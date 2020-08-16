@@ -44,17 +44,17 @@ class PatternCompiler(object):
         """
         if grammar_file is None:
             self.grammar = pygram.pattern_grammar
-            self.syms = pygram.pattern_symbols
+            self.sym_s = pygram.pattern_symbols
         else:
             self.grammar = driver.load_grammar(grammar_file)
-            self.syms = pygram.Symbols(self.grammar)
-        self.pygrammar = pygram.python_grammar
-        self.pysyms = pygram.python_symbols
+            self.sym_s = pygram.Symbols(self.grammar)
+        self.py_grammar = pygram.python_grammar
+        self.py_sym_s = pygram.python_symbols
         self.driver = driver.Driver(self.grammar, convert=pattern_convert)
 
-    def compile_pattern(self, input, debug=False, with_tree=False):
+    def compile_pattern(self, _input, debug=False, with_tree=False):
         """Compiles a pattern string to a nested pytree.*Pattern object."""
-        tokens = tokenize_wrapper(input)
+        tokens = tokenize_wrapper(_input)
         try:
             root = self.driver.parse_tokens(tokens, debug=debug)
         except parse.ParseError as e:
@@ -71,10 +71,10 @@ class PatternCompiler(object):
         """
         # XXX Optimize certain Wildcard-containing-Wildcard patterns
         # that can be merged
-        if node.type == self.syms.Matcher:
+        if node._type == self.sym_s.Matcher:
             node = node.children[0]  # Avoid unneeded recursion
 
-        if node.type == self.syms.Alternatives:
+        if node._type == self.sym_s.Alternatives:
             # Skip the odd children since they are just '|' tokens
             alts = [self.compile_node(ch) for ch in node.children[::2]]
             if len(alts) == 1:
@@ -82,27 +82,27 @@ class PatternCompiler(object):
             p = pytree.WildcardPattern([[a] for a in alts], min=1, max=1)
             return p.optimize()
 
-        if node.type == self.syms.Alternative:
+        if node._type == self.sym_s.Alternative:
             units = [self.compile_node(ch) for ch in node.children]
             if len(units) == 1:
                 return units[0]
             p = pytree.WildcardPattern([units], min=1, max=1)
             return p.optimize()
 
-        if node.type == self.syms.NegatedUnit:
+        if node._type == self.sym_s.NegatedUnit:
             pattern = self.compile_basic(node.children[1:])
             p = pytree.NegatedPattern(pattern)
             return p.optimize()
 
-        assert node.type == self.syms.Unit
+        assert node._type == self.sym_s.Unit
 
         name = None
         nodes = node.children
-        if len(nodes) >= 3 and nodes[1].type == token.EQUAL:
+        if len(nodes) >= 3 and nodes[1]._type == token.EQUAL:
             name = nodes[0].value
             nodes = nodes[2:]
         repeat = None
-        if len(nodes) >= 2 and nodes[-1].type == self.syms.Repeater:
+        if len(nodes) >= 2 and nodes[-1]._type == self.sym_s.Repeater:
             repeat = nodes[-1]
             nodes = nodes[:-1]
 
@@ -110,16 +110,16 @@ class PatternCompiler(object):
         pattern = self.compile_basic(nodes, repeat)
 
         if repeat is not None:
-            assert repeat.type == self.syms.Repeater
+            assert repeat._type == self.sym_s.Repeater
             children = repeat.children
             child = children[0]
-            if child.type == token.STAR:
+            if child._type == token.STAR:
                 min = 0
                 max = pytree.HUGE
-            elif child.type == token.PLUS:
+            elif child._type == token.PLUS:
                 min = 1
                 max = pytree.HUGE
-            elif child.type == token.LBRACE:
+            elif child._type == token.LBRACE:
                 assert children[-1].type == token.RBRACE
                 assert len(children) in (3, 5)
                 min = max = self.get_int(children[1])
@@ -139,10 +139,10 @@ class PatternCompiler(object):
         # Compile STRING | NAME [Details] | (...) | [...]
         assert len(nodes) >= 1
         node = nodes[0]
-        if node.type == token.STRING:
+        if node._type == token.STRING:
             value = str(literals.evalString(node.value))
             return pytree.LeafPattern(_type_of_literal(value), value)
-        elif node.type == token.NAME:
+        elif node._type == token.NAME:
             value = node.value
             if value.isupper():
                 if value not in TOKEN_MAP:
@@ -152,16 +152,16 @@ class PatternCompiler(object):
                 return pytree.LeafPattern(TOKEN_MAP[value])
             else:
                 if value == "any":
-                    type = None
+                    _type = None
                 elif not value.startswith("_"):
-                    type = getattr(self.pysyms, value, None)
-                    if type is None:
+                    _type = getattr(self.py_sym_s, value, None)
+                    if _type is None:
                         raise PatternSyntaxError("Invalid symbol: %r" % value)
                 if nodes[1:]:  # Details present
                     content = [self.compile_node(nodes[1].children[1])]
                 else:
                     content = None
-                return pytree.NodePattern(type, content)
+                return pytree.NodePattern(_type=_type, content=content)
         elif node.value == "(":
             return self.compile_node(nodes[1])
         elif node.value == "[":
@@ -171,7 +171,7 @@ class PatternCompiler(object):
         assert False, node
 
     def get_int(self, node):
-        assert node.type == token.NUMBER
+        assert node._type == token.NUMBER
         return int(node.value)
 
 
@@ -193,11 +193,11 @@ def _type_of_literal(value):
 
 def pattern_convert(grammar, raw_node_info):
     """Converts raw node information to a Node or Leaf instance."""
-    type, value, context, children = raw_node_info
-    if children or type in grammar.number2symbol:
-        return pytree.Node(type, children, context=context)
+    _type, value, context, children = raw_node_info
+    if children or _type in grammar.number2symbol:
+        return pytree.Node(_type, children, context=context)
     else:
-        return pytree.Leaf(type, value, context=context)
+        return pytree.Leaf(_type, value, context=context)
 
 
 def compile_pattern(pattern):

@@ -49,8 +49,7 @@ class FixItertoolsImports(fixer_base.BaseFix):
             children.pop().remove()
 
         # If there are no imports left, just get rid of the entire statement
-        if (not (imports.children or getattr(imports, 'value', None)) or
-            imports.parent is None):
+        if (not (imports.children or getattr(imports, 'value', None)) or imports.parent is None):
             p = node.prefix
             node = BlankLine()
             node.prefix = p

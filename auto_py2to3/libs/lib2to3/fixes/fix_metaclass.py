@@ -46,12 +46,12 @@ def fixup_parse_tree(cls_node):
     """ one-line classes don't get a suite in the parse tree so we add
         one to normalize the tree
     """
+    i = 0
     for node in cls_node.children:
         if node.type == syms.suite:
             # already in the preferred format, do nothing
             return
 
-    # !%@#! oneliners have no suite node, we have to fake one up
     for i, node in enumerate(cls_node.children):
         if node.type == token.COLON:
             break
@@ -65,7 +65,7 @@ def fixup_parse_tree(cls_node):
         suite.append_child(move_node.clone())
         move_node.remove()
     cls_node.append_child(suite)
-    node = suite
+    # node = suite
 
 
 def fixup_simple_stmt(parent, i, stmt_node):
@@ -73,6 +73,7 @@ def fixup_simple_stmt(parent, i, stmt_node):
         simple_stmt.  We just want the __metaclass__ part so we move
         everything after the semi-colon into its own simple_stmt node
     """
+    semi_ind = 0
     for semi_ind, node in enumerate(stmt_node.children):
         if node.type == token.SEMI:  # *sigh*
             break
@@ -112,8 +113,7 @@ def find_metas(cls_node):
             if expr_node.type == syms.expr_stmt and expr_node.children:
                 # Check if the expr_node is a simple assignment.
                 left_node = expr_node.children[0]
-                if isinstance(left_node, Leaf) and \
-                    left_node.value == '__metaclass__':
+                if isinstance(left_node, Leaf) and left_node.value == '__metaclass__':
                     # We found an assignment to __metaclass__.
                     fixup_simple_stmt(node, i, simple_node)
                     remove_trailing_newline(simple_node)
@@ -150,6 +150,7 @@ class FixMetaclass(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
+        _results = results
         if not has_metaclass(node):
             return
 
@@ -157,6 +158,7 @@ class FixMetaclass(fixer_base.BaseFix):
 
         # find metaclasses, keep the last one
         last_metaclass = None
+        suite = None
         for suite, i, stmt in find_metas(node):
             last_metaclass = stmt
             stmt.remove()

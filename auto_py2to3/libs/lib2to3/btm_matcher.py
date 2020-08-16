@@ -140,7 +140,10 @@ class BottomMatcher(object):
         return results
 
     def print_ac(self):
-        "Prints a graphviz diagram of the BM automaton(for debugging)"
+        """
+        Prints a graphviz diagram of the BM automaton(for debugging)
+        :return:
+        """
         print("digraph g{")
 
         def print_node(node):

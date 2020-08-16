@@ -76,6 +76,7 @@ class FixOperator(fixer_base.BaseFix):
         return self._handle_type2abc(node, results, "numbers", "Number")
 
     def _handle_rename(self, node, results, name):
+        _node = node
         method = results["method"][0]
         method.value = name
         method.changed()

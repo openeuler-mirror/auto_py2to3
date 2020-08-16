@@ -18,6 +18,10 @@ class FixUnicode(fixer_base.BaseFix):
     BM_compatible = True
     PATTERN = "STRING | 'unicode' | 'unichr'"
 
+    def __init__(self, options, log):
+        super().__init__(options, log)
+        self.unicode_literals = None
+
     def start_tree(self, tree, filename):
         super(FixUnicode, self).start_tree(tree, filename)
         self.unicode_literals = 'unicode_literals' in tree.future_features

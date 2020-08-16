@@ -87,6 +87,9 @@ class Parser(object):
         """
         self.grammar = grammar
         self.convert = convert or (lambda grammar, node: node)
+        self.stack = None
+        self.rootnode = None
+        self.used_names = set() # Aliased to self.rootnode.used_names in pop()
 
     def setup(self, start=None):
         """Prepare for parsing.
@@ -109,8 +112,6 @@ class Parser(object):
         newnode = (start, None, None, [])
         stackentry = (self.grammar.dfas[start], 0, newnode)
         self.stack = [stackentry]
-        self.rootnode = None
-        self.used_names = set()  # Aliased to self.rootnode.used_names in pop()
 
     def addtoken(self, type, value, context):
         """Add a token; return True iff this is the end of the program."""

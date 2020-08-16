@@ -29,10 +29,10 @@ class FixExitfunc(fixer_base.BaseFix):
 
     def __init__(self, *args):
         super(FixExitfunc, self).__init__(*args)
+        self.sys_import = None
 
     def start_tree(self, tree, filename):
         super(FixExitfunc, self).start_tree(tree, filename)
-        self.sys_import = None
 
     def transform(self, node, results):
         # First, find the sys import. We'll just hope it's global scope.
@@ -63,7 +63,7 @@ class FixExitfunc(fixer_base.BaseFix):
         else:
             containing_stmt = self.sys_import.parent
             position = containing_stmt.children.index(self.sys_import)
-            stmt_container = containing_stmt.parent
+            # stmt_container = containing_stmt.parent
             new_import = pytree.Node(syms.import_name,
                                      [Name("import"), Name("atexit", " ")]
                                      )

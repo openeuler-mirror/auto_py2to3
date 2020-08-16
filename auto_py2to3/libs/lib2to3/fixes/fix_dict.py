@@ -54,7 +54,7 @@ class FixDict(fixer_base.BaseFix):
         head = results["head"]
         method = results["method"][0]  # Extract node for method name
         tail = results["tail"]
-        sym_s = self.syms
+        sym_s = self.sym_s
         method_name = method.value
         isiter = method_name.startswith("iter")
         isview = method_name.startswith("view")
@@ -90,9 +90,7 @@ class FixDict(fixer_base.BaseFix):
         if node.parent is None:
             return False
         results = {}
-        if (node.parent.parent is not None and
-            self.p1.match(node.parent.parent, results) and
-            results["node"] is node):
+        if node.parent.parent is not None and self.p1.match(node.parent.parent, results) and results["node"] is node:
             if isiter:
                 # iter(d.iterkeys()) -> iter(d.keys()), etc.
                 return results["func"].value in iter_exempt

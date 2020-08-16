@@ -89,21 +89,21 @@ class BaseFix(object):
         results = {"node": node}
         return self.pattern.match(node, results) and results
 
-    def transform(self, node, results):
-        """Returns the transformation for a given parse tree node.
-
-        Args:
-          node: the root of the parse tree that matched the fixer.
-          results: a dict mapping symbolic names to part of the match.
-
-        Returns:
-          None, or a node that is a modified copy of the
-          argument node.  The node argument may also be modified in-place to
-          effect the same change.
-
-        Subclass *must* override.
-        """
-        raise NotImplementedError()
+    # def transform(self, node, results):
+    #     """Returns the transformation for a given parse tree node.
+    #
+    #     Args:
+    #       node: the root of the parse tree that matched the fixer.
+    #       results: a dict mapping symbolic names to part of the match.
+    #
+    #     Returns:
+    #       None, or a node that is a modified copy of the
+    #       argument node.  The node argument may also be modified in-place to
+    #       effect the same change.
+    #
+    #     Subclass *must* override.
+    #     """
+    #     raise NotImplementedError()
 
     def new_name(self, template="xxx_todo_changeme"):
         """Return a string suitable for use as an identifier

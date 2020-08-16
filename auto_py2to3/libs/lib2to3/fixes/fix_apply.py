@@ -30,7 +30,7 @@ class FixApply(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        sym_s = self.syms
+        sym_s = self.sym_s
         assert results
         func = results["func"]
         args = results["args"]
@@ -38,12 +38,12 @@ class FixApply(fixer_base.BaseFix):
         # I feel like we should be able to express this logic in the
         # PATTERN above but I don't know how to do it so...
         if args:
-            if args.type == self.syms.star_expr:
+            if args.type == sym_s.star_expr:
                 return  # Make no change.
-            if (args.type == self.syms.argument and
+            if (args.type == sym_s.argument and
                 args.children[0].value == '**'):
                 return  # Make no change.
-        if kwds and (kwds.type == self.syms.argument and
+        if kwds and (kwds.type == sym_s.argument and
                      kwds.children[0].value == '**'):
             return  # Make no change.
         prefix = node.prefix
@@ -59,10 +59,10 @@ class FixApply(fixer_base.BaseFix):
         if kwds is not None:
             kwds = kwds.clone()
             kwds.prefix = ""
-        l_newargs = [pytree.Leaf(token.STAR, "*"), args]
+        l_new_args = [pytree.Leaf(token.STAR, "*"), args]
         if kwds is not None:
-            l_newargs.extend([Comma(),
+            l_new_args.extend([Comma(),
                               pytree.Leaf(token.DOUBLESTAR, "**"),
                               kwds])
-            l_newargs[-2].prefix = " "
-        return Call(func, l_newargs, prefix=prefix)
+            l_new_args[-2].prefix = " "
+        return Call(func, l_new_args, prefix=prefix)

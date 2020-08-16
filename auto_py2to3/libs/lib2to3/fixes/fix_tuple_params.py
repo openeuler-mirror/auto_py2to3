@@ -26,8 +26,7 @@ from ..fixer_util import Assign, Name, Newline, Number, Subscript, syms
 
 
 def is_docstring(stmt):
-    return isinstance(stmt, pytree.Node) and \
-           stmt.children[0].type == token.STRING
+    return isinstance(stmt, pytree.Node) and stmt.children[0].type == token.STRING
 
 
 class FixTupleParams(fixer_base.BaseFix):
@@ -157,7 +156,9 @@ def find_params(node):
     return [find_params(c) for c in node.children if c.type != token.COMMA]
 
 
-def map_to_index(param_list, prefix=[], d=None):
+def map_to_index(param_list, prefix=None, d=None):
+    if not prefix:
+        prefix = []
     if d is None:
         d = {}
     for i, obj in enumerate(param_list):

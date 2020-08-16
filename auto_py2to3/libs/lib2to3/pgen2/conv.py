@@ -30,7 +30,9 @@ without having to invoke the Python pgen C program.
 import re
 
 # Local imports
-from pgen2 import grammar, token
+# from pgen2 import grammar, token
+import grammar
+import token
 
 
 class Converter(grammar.Grammar):
@@ -43,6 +45,16 @@ class Converter(grammar.Grammar):
     See the base class for more documentation.
 
     """
+
+    def __init__(self):
+        self.tokens = {}  # map from numeric token values to arc labels
+        self.keywords = {}  # map from keyword strings to arc labels
+        self.number2symbol = {}
+        self.symbol2number = {}
+        self.states = None
+        self.dfas = None
+        self.labels = None
+        self.start = None
 
     def run(self, graminit_h, graminit_c):
         """Load the grammar tables from the text files written by pgen."""
@@ -63,8 +75,6 @@ class Converter(grammar.Grammar):
         except OSError as err:
             print("Can't open %s: %s" % (filename, err))
             return False
-        self.symbol2number = {}
-        self.number2symbol = {}
         lineno = 0
         for line in f:
             lineno += 1
@@ -248,8 +258,6 @@ class Converter(grammar.Grammar):
 
     def finish_off(self):
         """Create additional useful structures.  (Internal)."""
-        self.keywords = {}  # map from keyword strings to arc labels
-        self.tokens = {}  # map from numeric token values to arc labels
         for ilabel, (type, value) in enumerate(self.labels):
             if type == token.NAME and value is not None:
                 self.keywords[value] = ilabel

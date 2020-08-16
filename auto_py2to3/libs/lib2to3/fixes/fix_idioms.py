@@ -111,10 +111,12 @@ class FixIdioms(fixer_base.BaseFix):
         return test
 
     def transform_while(self, node, results):
+        _node = node
         one = results["while"]
         one.replace(Name("True", prefix=one.prefix))
 
     def transform_sort(self, node, results):
+        _node = node
         sort_stmt = results["sort"]
         next_stmt = results["next"]
         list_call = results.get("list")

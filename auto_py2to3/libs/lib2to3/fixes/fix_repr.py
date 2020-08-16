@@ -17,6 +17,6 @@ class FixRepr(fixer_base.BaseFix):
     def transform(self, node, results):
         expr = results["expr"].clone()
 
-        if expr.type == self.syms.testlist1:
+        if expr.type == self.sym_s.testlist1:
             expr = parenthesize(expr)
         return Call(Name("repr"), [expr], prefix=node.prefix)

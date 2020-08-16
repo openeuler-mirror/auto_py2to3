@@ -33,6 +33,10 @@ class FixNext(fixer_base.BaseFix):
 
     order = "pre"  # Pre-order tree traversal
 
+    def __init__(self, options, log):
+        super().__init__(options, log)
+        self.shadowed_next = None
+
     def start_tree(self, tree, filename):
         super(FixNext, self).start_tree(tree, filename)
 
