@@ -13,11 +13,12 @@
 
 """Main module."""
 import os
+
 from utils import find_all_py_files
 from parse import ParsePyFiles
 
 transfer_abs_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/tests/test_project/"
 
 for file_path in find_all_py_files(path=transfer_abs_path):
-    for row_content in ParsePyFiles(file_path=file_path).next():
+    for row_content in ParsePyFiles(file_path=file_path).rows_next():
         print(row_content)
