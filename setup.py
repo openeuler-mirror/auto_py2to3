@@ -20,7 +20,7 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=7.0', ]
+requirements = ['Click>=7.0', '2to3', 'pip>=19.2.3', 'setuptools==41.0.1']
 
 setup_requirements = ['pytest-runner', ]
 
