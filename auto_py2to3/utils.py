@@ -12,6 +12,13 @@
 
 
 import os
+import sys
+
+WIN = sys.platform.startswith('win')
+if WIN:
+    path_split = '\\'
+else:
+    path_split = '/'
 
 
 def find_all_py_files(path):
@@ -21,7 +28,7 @@ def find_all_py_files(path):
     """
     for base_path, dir_names, file_names in os.walk(path):
         for real_path in [
-            os.path.join(base_path, p).replace("\\", "/") for p in dir_names + file_names if ".py" in p
+            os.path.join(base_path, p).replace(path_split, "/") for p in dir_names + file_names if ".py" in p
         ]:
             if real_path:
                 yield real_path

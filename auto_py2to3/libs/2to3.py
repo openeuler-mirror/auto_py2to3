@@ -10,25 +10,7 @@
 # See the Mulan PSL v2 for more details.
 # Create: 2020-8-1
 
-__all__ = ['ParsePyFiles']
+import sys
+from lib2to3.main import main
 
-
-class ParsePyFiles(object):
-    """
-    解析Py文件类
-    """
-    def __init__(self, file_path):
-        """
-        读入文件内容
-        :param file_path:
-        """
-        with open(file_path, 'r') as f:
-            self.content = f.readlines()
-
-    def rows_next(self):
-        """
-        遍历每一行内容
-        :return:
-        """
-        for con in self.content:
-            yield con
+sys.exit(main("lib2to3.fixes"))
