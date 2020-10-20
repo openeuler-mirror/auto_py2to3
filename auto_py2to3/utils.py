@@ -32,3 +32,18 @@ def find_all_py_files(path):
         ]:
             if real_path:
                 yield real_path
+
+
+def del_bak(path):
+    """
+    Absolute path to the target project folder
+    :param path:
+    :return:
+    """
+    for base_path, dir_names, file_names in os.walk(path):
+        for real_path in [
+            os.path.join(base_path, p).replace(path_split, "/") for p in dir_names + file_names if ".bak" in p
+        ]:
+            if real_path:
+                os.remove(real_path)
+    return True
