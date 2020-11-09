@@ -13,6 +13,8 @@
 
 import os
 import sys
+import requests
+import re
 
 WIN = sys.platform.startswith('win')
 if WIN:
@@ -47,3 +49,32 @@ def del_bak(path):
             if real_path:
                 os.remove(real_path)
     return True
+
+
+def _is_number(num_str):
+    if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(num_str):
+        return False
+    return True
+
+
+def find_python_version_by_library_version(ln, lv):
+    return [
+        float(_) for _ in
+        set(re.findall("Python :: (.*?)\n", requests.get(url=f"https://pypi.org/project/{ln}/{lv}").text))
+        if _is_number(_)
+    ]
+
+
+def get_requirements_library(path):
+    requirements_dict = {}
+    with open(path, "r") as f:
+        for line in f.readlines():
+            line = line.strip()
+            if not line:
+                continue
+            ln, *lv = line.split("==")
+            if not lv:
+                requirements_dict[ln] = ""
+            else:
+                requirements_dict[ln] = lv[0]
+    return requirements_dict

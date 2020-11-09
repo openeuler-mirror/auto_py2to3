@@ -13,27 +13,61 @@
 """Main module."""
 import os
 import click
-from utils import find_all_py_files, del_bak
+from utils import *
+import prettytable as pt
 
 
 @click.command()
-@click.option('--interpreter_command_name', default="python",
-              help='(str)The global command name of the Python interpreter, used in order to execute 2to3.')
-@click.option('--project_path', prompt='Transfer Folder/File Path', help='(str)Must Give A Transfer Folder/File Path.')
-@click.option('--is_del_bak', default=0,
-              help='(1/0)The global command name of the Python interpreter, used in order to execute 2to3.')
-def auto_2to3(interpreter_command_name, project_path, is_del_bak):
+@click.option(
+    '--interpreter_command_name',
+    default="python",
+    help='(str)The global command name of the Python interpreter, used in order to execute 2to3.'
+)
+@click.option(
+    '--project_path',
+    default="",
+    # prompt='Transfer Folder/File Path',
+    help='(str)Must Give A Transfer Folder/File Path.'
+)
+@click.option(
+    '--is_del_bak',
+    default=0,
+    help='(1/0)The global command name of the Python interpreter, used in order to execute 2to3.'
+)
+@click.option(
+    '--verify_library_version',
+    # prompt='Requirement Library File Path',
+    default="",
+    help='(str)Only the standard requirements.txt version control format is supported.'
+)
+def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library_version):
     """Auto 2to3 Tool Usage Command Description"""
-    for file_path in find_all_py_files(path=project_path):
-        print(os.system(f'{interpreter_command_name} libs/2to3.py -w {file_path}'))
+    if project_path:
+        for file_path in find_all_py_files(path=project_path):
+            print(os.system(f'{interpreter_command_name} libs/2to3.py -w {file_path}'))
     if is_del_bak:
         del_bak(path=project_path)
+    if verify_library_version:
+        print(f"Current Python Version: {sys.version}.")
+        verify_result = pt.PrettyTable(['No', 'Library', 'Version', 'Support Status'])
+        python_version = float(f"{sys.version_info.major}.{sys.version_info.minor}")
+        print(python_version)
+        import time
+        for i, (ln, lv) in enumerate(get_requirements_library(path=verify_library_version).items()):
+            # s = time.time()
+            support_python_versions = find_python_version_by_library_version(ln=ln, lv=lv)
+            # e = time.time()
+            # print(e - s)
+            if python_version in support_python_versions:
+                verify_result.add_row([str(i + 1), ln, lv, '√'])
+            else:
+                verify_result.add_row([str(i + 1), ln, lv, '×'])
     return True
 
 
 if __name__ == '__main__':
     """
-    test command: python3.6 auto2to3.py ../tests/test_project
+    test command:
     """
     try:
         auto_2to3()
