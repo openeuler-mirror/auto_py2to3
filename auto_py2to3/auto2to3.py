@@ -19,23 +19,23 @@ import prettytable as pt
 
 @click.command()
 @click.option(
-    '--interpreter_command_name',
+    '-interpreter_command_name',
     default="python",
     help='(str)The global command name of the Python interpreter, used in order to execute 2to3.'
 )
 @click.option(
-    '--project_path',
+    '-project_path',
     default="",
     # prompt='Transfer Folder/File Path',
     help='(str)Must Give A Transfer Folder/File Path.'
 )
 @click.option(
-    '--is_del_bak',
+    '-is_del_bak',
     default=0,
     help='(1/0)The global command name of the Python interpreter, used in order to execute 2to3.'
 )
 @click.option(
-    '--verify_library_version',
+    '-verify_library_version',
     # prompt='Requirement Library File Path',
     default="",
     help='(str)Only the standard requirements.txt version control format is supported.'
@@ -51,7 +51,7 @@ def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library
         print(f"Current Python Version: {sys.version}.")
         verify_result = pt.PrettyTable(['No', 'Library', 'Version', 'Support Status'])
         python_version = float(f"{sys.version_info.major}.{sys.version_info.minor}")
-        print(python_version)
+        print("Statistical analysis of dependent libraries to adapt to the current Python version: Loading...")
         import time
         for i, (ln, lv) in enumerate(get_requirements_library(path=verify_library_version).items()):
             # s = time.time()
@@ -62,6 +62,7 @@ def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library
                 verify_result.add_row([str(i + 1), ln, lv, '√'])
             else:
                 verify_result.add_row([str(i + 1), ln, lv, '×'])
+        print(verify_result)
     return True
 
 

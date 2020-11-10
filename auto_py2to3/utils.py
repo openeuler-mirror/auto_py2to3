@@ -25,6 +25,7 @@ else:
 
 def find_all_py_files(path):
     """
+    Get all py files under this path
     :param path:
     :return:
     """
@@ -52,12 +53,23 @@ def del_bak(path):
 
 
 def _is_number(num_str):
+    """
+    Determine whether the string can be converted to a number (int and float)
+    :param num_str:
+    :return:
+    """
     if not re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$').match(num_str):
         return False
     return True
 
 
 def find_python_version_by_library_version(ln, lv):
+    """
+    Get the Python version applicable to the specified dependent library
+    :param ln:
+    :param lv:
+    :return:
+    """
     return [
         float(_) for _ in
         set(re.findall("Python :: (.*?)\n", requests.get(url=f"https://pypi.org/project/{ln}/{lv}").text))
@@ -66,6 +78,11 @@ def find_python_version_by_library_version(ln, lv):
 
 
 def get_requirements_library(path):
+    """
+    Get all the dependent libraries in the specified requirements.txt
+    :param path:
+    :return:
+    """
     requirements_dict = {}
     with open(path, "r") as f:
         for line in f.readlines():
