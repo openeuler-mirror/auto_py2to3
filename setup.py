@@ -14,13 +14,20 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
+with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=7.0', '2to3', 'pip>=19.2.3', 'setuptools==41.0.1']
+requirements = [
+    'Click>=7.0',
+    '2to3',
+    'pip>=19.2.3',
+    'setuptools==41.0.1',
+    'requests==2.23.0',
+    'prettytable==1.0.1'
+]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -29,13 +36,20 @@ test_requirements = ['pytest>=3', ]
 setup(
     author="61Duke",
     author_email='loveweihaitong@foxmail.com',
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*',
+    python_requires='>=3.*.*',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Mulan PSL v2',
         'Natural Language :: English',
+        'Programming Language :: Python :: 3.1',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     description="On January 1, 2020, the Python 2 code base was frozen. Since that day, there has been no further "
                 "backport of Python 2, which actually makes this language and runtime environment obsolete. Nick "
