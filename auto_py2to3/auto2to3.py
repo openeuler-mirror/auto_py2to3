@@ -69,5 +69,5 @@ if __name__ == '__main__':
     """
     try:
         auto_2to3()
-    except Exception as e:
+    except SystemError as e:
         print(e)

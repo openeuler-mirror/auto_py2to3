@@ -78,13 +78,13 @@ def _format_date_en2standard(date, en_fmt, return_type='str'):
     if return_type == "str":
         try:
             return datetime.strptime(date, en_fmt).strftime('%Y-%m-%d')
-        except Exception as e:
+        except SyntaxError as e:
             print(e)
         return ""
     elif return_type == "timeObject":
         try:
             return datetime.strptime(date, en_fmt)
-        except Exception as e:
+        except SyntaxError as e:
             print(e)
         return None
     else:
@@ -362,9 +362,9 @@ def get_requirements_library(path):
             line = line.strip()
             if not line:
                 continue
-            ln, *lv = line.split("==")
-            if not lv:
-                requirements_dict[ln] = ""
+            if "==" not in line:
+                requirements_dict[line] = ""
             else:
-                requirements_dict[ln] = lv[0]
+                ln, lv = line.split("==", 1)
+                requirements_dict[ln] = lv
     return requirements_dict
