@@ -88,7 +88,7 @@ def _format_date_en2standard(date, en_fmt, return_type='str'):
             print(e)
         return None
     else:
-        raise ValueError(f"Don't Support ({return_type}) Type Parameter!")
+        raise ValueError("Don't Support ({0}) Type Parameter!".format(return_type))
 
 
 def find_all_py_files(path):
