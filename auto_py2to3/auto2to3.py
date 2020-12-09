@@ -48,9 +48,9 @@ def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library
     if is_del_bak:
         del_bak(path=project_path)
     if verify_library_version:
-        print(f"Current Python Version: {sys.version}.")
+        print("Current Python Version: {0}.".format(sys.version))
         verify_result = pt.PrettyTable(['No', 'Library', 'Version', 'Support Status', 'Recommend Version'])
-        python_version = float(f"{sys.version_info.major}.{sys.version_info.minor}")
+        python_version = float("{0}.{1}".format(sys.version_info.major, sys.version_info.minor))
         print("Statistical analysis of dependent libraries to adapt to the current Python version: Loading...")
         for i, (ln, versions) in enumerate(find_python_versions_by_library_versions(
             get_requirements_library(path=verify_library_version)

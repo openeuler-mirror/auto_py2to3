@@ -185,11 +185,11 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
         "newest_version": ""
     }
     # Request detailed library version release information data
-    response = requests.get(url=f"https://pypi.org/pypi/{ln}/json").json()
+    response = requests.get(url="https://pypi.org/pypi/{0}/json".format(ln)).json()
     newest_library_version = response.get("info", {}).get("version", "")
     results["newest_version"] = newest_library_version
     if not lv:
-        print(f"Python dependency library ({ln}) does not have version.")
+        print("Python dependency library ({0}) does not have version.".format(ln))
         return results
     # Get the timeline of Python release version
     if not os.path.exists("conf/python_versions.json"):
@@ -214,7 +214,7 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
         ) for item in response.get("releases", {}).get(lv, [])
     ]
     if not library_version_times:
-        print(f"Python dependency library ({ln}) does not have version({lv}).")
+        print("Python dependency library ({0}) does not have version({1}).".format(ln, lv))
         return results
     extract_library_version_time = _format_date_en2standard(
         Counter(library_version_times).most_common(1)[0][0],
@@ -244,72 +244,72 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
             if micro == "*":
                 support_versions = [
                     version for version in support_versions if
-                    version[:3] != f"{major}.{minor}"
+                    version[:3] != "{0}.{1}".format(major, minor)
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    version != f"{major}.{minor}.{micro[0]}"
+                    version != "{0}.{1}.{2}".format(major, minor, micro[0])
                 ]
         elif option[:2] == ">=":
             major, minor, micro = _version_str2tuple(vs=option[2:])
             if micro == "*":
                 support_versions = [
                     version for version in support_versions if
-                    float(version[:3]) >= float(f"{major}.{minor}")
+                    float(version[:3]) >= float("{0}.{1}".format(major, minor))
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    int(version.replace(".", "")) >= int(f"{major}{minor}{micro[0]}")
+                    int(version.replace(".", "")) >= int("{0}.{1}.{2}".format(major, minor, micro[0]))
                 ]
         elif option[:2] == "<=":
             major, minor, micro = _version_str2tuple(vs=option[2:])
             if micro == "*":
                 support_versions = [
                     version for version in support_versions if
-                    float(version[:3]) <= float(f"{major}.{minor}")
+                    float(version[:3]) <= float("{0}.{1}".format(major, minor))
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    int(version.replace(".", "")) <= int(f"{major}{minor}{micro[0]}")
+                    int(version.replace(".", "")) <= int("{0}.{1}.{2}".format(major, minor, micro[0]))
                 ]
         elif option[:2] == "==":
             major, minor, micro = _version_str2tuple(vs=option[2:])
             if micro == "*":
                 support_versions = [
                     version for version in support_versions if
-                    version[:3] == f"{major}.{minor}"
+                    version[:3] == "{0}.{1}".format(major, minor)
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    version == f"{major}.{minor}.{micro[0]}"
+                    version == "{0}.{1}.{2}".format(major, minor, micro[0])
                 ]
         elif option[0] == ">" and option[1].isdigit():
             major, minor, micro = _version_str2tuple(vs=option[1:])
             if not micro or micro[0] == "*":
                 support_versions = [
                     version for version in support_versions if
-                    float(version[:3]) > float(f"{major}.{minor}")
+                    float(version[:3]) > float("{0}.{1}".format(major, minor))
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    int(version.replace(".", "")) > int(f"{major}{minor}{micro[0]}")
+                    int(version.replace(".", "")) > int("{0}.{1}.{2}".format(major, minor, micro[0]))
                 ]
         elif option[0] == "<" and option[1].isdigit():
             major, minor, micro = _version_str2tuple(vs=option[1:])
             if micro == "*":
                 support_versions = [
                     version for version in support_versions if
-                    float(version[:3]) < float(f"{major}.{minor}")
+                    float(version[:3]) < float("{0}.{1}".format(major, minor))
                 ]
             else:
                 support_versions = [
                     version for version in support_versions if
-                    int(version.replace(".", "")) < int(f"{major}{minor}{micro[0]}")
+                    int(version.replace(".", "")) < int("{0}.{1}.{2}".format(major, minor, micro[0]))
                 ]
         else:
             print("other !!!!!!!!")
@@ -321,7 +321,7 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
         # print("not requires_python", ln, lv)
         classifiers_versions = set()
         for item in requests.get(
-            url=f"https://pypi.org/pypi/{ln}/{lv}/json"
+            url="https://pypi.org/pypi/{0}/{1}/json".format(ln, lv)
         ).json().get("info", {}).get("classifiers", []):
             if "Python :: " in item:
                 ver = item.split(" :: ")[-1]
