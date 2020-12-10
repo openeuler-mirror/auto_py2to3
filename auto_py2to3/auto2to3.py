@@ -48,29 +48,26 @@ def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library
     if is_del_bak:
         del_bak(path=project_path)
     if verify_library_version:
-        print(f"Current Python Version: {sys.version}.")
-        verify_result = pt.PrettyTable(['No', 'Library', 'Version', 'Support Status'])
-        python_version = float(f"{sys.version_info.major}.{sys.version_info.minor}")
+        print("Current Python Version: {0}.".format(sys.version))
+        verify_result = pt.PrettyTable(['No', 'Library', 'Version', 'Support Status', 'Recommend Version'])
+        python_version = float("{0}.{1}".format(sys.version_info.major, sys.version_info.minor))
         print("Statistical analysis of dependent libraries to adapt to the current Python version: Loading...")
-        import time
-        for i, (ln, lv) in enumerate(get_requirements_library(path=verify_library_version).items()):
-            # s = time.time()
-            support_python_versions = find_python_version_by_library_version(ln=ln, lv=lv)
-            # e = time.time()
-            # print(e - s)
-            if python_version in support_python_versions:
-                verify_result.add_row([str(i + 1), ln, lv, '√'])
+        for i, (ln, versions) in enumerate(find_python_versions_by_library_versions(
+            get_requirements_library(path=verify_library_version)
+        ).items()):
+            if python_version in versions["python_version"]:
+                verify_result.add_row([str(i + 1), ln, versions["version"], '√', versions["version"]])
             else:
-                verify_result.add_row([str(i + 1), ln, lv, '×'])
+                verify_result.add_row([str(i + 1), ln, versions["version"], '×', versions["newest_version"]])
         print(verify_result)
     return True
 
 
 if __name__ == '__main__':
     """
-    test command:
+    test command: python auto2to3.py -verify_library_version ../tests/example1/requirements.txt
     """
     try:
         auto_2to3()
-    except Exception as e:
+    except SystemError as e:
         print(e)
