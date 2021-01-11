@@ -40,11 +40,19 @@ import prettytable as pt
     default="",
     help='(str)Only the standard requirements.txt version control format is supported.'
 )
-def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library_version):
+@click.option(
+    '-html_diff_path',
+    # prompt='Html File Output Path',
+    default="",
+    help='(str)Must Give A Html File Output Path'
+)
+def auto_2to3(interpreter_command_name, project_path, is_del_bak, verify_library_version, html_diff_path):
     """Auto 2to3 Tool Usage Command Description"""
     if project_path:
         for file_path in find_all_py_files(path=project_path):
             print(os.system(f'{interpreter_command_name} libs/2to3.py -w {file_path}'))
+    if html_diff_path:
+        generate_html_diff(html_diff_path)
     if is_del_bak:
         del_bak(path=project_path)
     if verify_library_version:

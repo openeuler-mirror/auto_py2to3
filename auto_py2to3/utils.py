@@ -21,6 +21,7 @@ import re
 from collections import Counter
 import deco
 import random
+from difflib import HtmlDiff
 from collections import defaultdict
 
 WIN = sys.platform.startswith('win')
@@ -99,7 +100,7 @@ def find_all_py_files(path):
     """
     for base_path, dir_names, file_names in os.walk(path):
         for real_path in [
-            os.path.join(base_path, p).replace(path_split, "/") for p in dir_names + file_names if ".py" in p
+            os.path.join(base_path, p).replace(path_split, "/") for p in dir_names + file_names if ".py" == p[-3:]
         ]:
             if real_path:
                 yield real_path
@@ -368,3 +369,22 @@ def get_requirements_library(path):
                 ln, lv = line.split("==", 1)
                 requirements_dict[ln] = lv
     return requirements_dict
+
+
+def generate_html_diff(path):
+    """
+    Generate converted comparison file (. HTML)
+
+    :param path:
+    :return:
+    """
+    htmlDiff = HtmlDiff()
+    for p1 in find_all_py_files(path):
+        p2 = p1 + ".bak"
+        with open(p1, "r", encoding='utf8') as f:
+            advanced = [line.strip('\n') for line in f.readlines()]
+        with open(p2, "r", encoding='utf8') as f:
+            origin = [line.strip('\n') for line in f.readlines()]
+        out_path = os.path.join(path, p1.split("/")[-1].split(".")[0] + "_diff_comp.html")
+        with open(out_path, 'w', encoding="utf-8") as f:
+            f.writelines(htmlDiff.make_file(origin, advanced))
