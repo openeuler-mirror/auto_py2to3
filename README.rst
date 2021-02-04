@@ -25,10 +25,13 @@ Development Planning
 2. Single file 2to3, relying on library version retrieval and analysis, and running test cases. (Finished test)
 3. Single file 2to3, relying on library version upgrade and corresponding function upgrade, running test cases. (Finished test)
 4. Simple project structure transfer all py files as a whole, and run test cases. (Finished test)
-5. Test the conversion effects of several mainstream libraries, and modify optimization bugs. (Future planning)
+5. Test the conversion effects of several mainstream libraries, and modify optimization bugs. (Developing)
+
+Usage Example
+------------
 
 
-Get Started!
+Contribution Get Started!
 ------------
 
 Ready to contribute or user? Here's how to set up `auto_py2to3` for local development.

@@ -11,23 +11,18 @@
 # Create: 2020-8-1
 
 """The setup script."""
-
+import os
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
+with open("README.rst", "r", encoding="utf-8") as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open("HISTORY.rst", "r", encoding="utf-8") as history_file:
     history = history_file.read()
 
-requirements = [
-    'Click>=7.0',
-    '2to3',
-    'pip>=19.2.3',
-    'setuptools==41.0.1',
-    'requests==2.23.0',
-    'prettytable==1.0.1'
-]
+dir_ = os.path.dirname(os.path.abspath(__file__))
+requirements = open(os.path.join(dir_, "requirements.txt"), "r", encoding="utf-8").read().splitlines()
+
 
 setup_requirements = ['pytest-runner', ]
 
@@ -35,7 +30,7 @@ test_requirements = ['pytest>=3', ]
 
 setup(
     author="61Duke",
-    author_email='loveweihaitong@foxmail.com',
+    author_email='61duke@isrc.iscas.ac.cn',
     python_requires='>=3.*.*',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -65,7 +60,7 @@ setup(
                 "migration process, the library will continue to iterate and maintain.",
     entry_points={
         'console_scripts': [
-            'auto_py2to3=auto_py2to3.cli:main',
+            'py2to3=auto_py2to3.cli:main',
         ],
     },
     install_requires=requirements,
@@ -79,6 +74,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://gitee.com/weihaitong/auto_py2to3',
-    version='0.1.0',
+    version='0.1.1',
     zip_safe=False,
 )
