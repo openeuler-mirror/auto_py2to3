@@ -30,7 +30,7 @@ Development Planning
 
 Usage Example
 ------------
-.. image:: example/ticketGrabbingExample-test processing.png
+.. image:: /example/ticketGrabbingExample-test processing.png
 
 Contribution Get Started!
 ------------
