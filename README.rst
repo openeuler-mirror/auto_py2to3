@@ -30,7 +30,7 @@ Development Planning
 
 Usage Example
 ------------
-.. image:: /example/ticketGrabbingExample-test processing.png
+.. image:: https://gitee.com/weihaitong/auto_py2to3/raw/master/example/ticketGrabbingExample-test%20processing.png
 
 Contribution Get Started!
 ------------
