@@ -26,7 +26,7 @@ from utils import (format_date_en2standard,
                    find_files,
                    print)
 
-__all = ["libraries_detect_and_recommend"]
+__all__ = ["libraries_detect_and_recommend"]
 
 
 def _version_str2tuple(vs):
