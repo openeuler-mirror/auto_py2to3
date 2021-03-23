@@ -307,6 +307,12 @@ def libraries_detect_and_recommend(target_path):
                 detect_recommend_results.add_row(
                     [str(i + 1), ln, versions["version"], "×", versions["newest_version"]]
                 )
+        with open(target_path + "/requirements_REC.txt", "w", encoding="utf-8") as f:
+            for ln, versions in python_versions_libraries.items():
+                if python_version in versions["python_version"]:
+                    f.write("{0}=={1}\n".format(ln, versions["version"]))
+                else:
+                    f.write("{0}=={1}\n".format(ln, versions["newest_version"]))
     except Exception as e:
         raise e
     print(detect_recommend_results)
