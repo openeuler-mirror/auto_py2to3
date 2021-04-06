@@ -11,7 +11,7 @@
 # Create: 2021-2-1
 
 import click
-from auto2to3 import py2to3
+from .auto2to3 import py2to3
 
 
 @click.command()
@@ -52,18 +52,22 @@ def main(path,
          is_html_diff,
          is_check_requirements):
     """
+    The main entrance of the command line function of the 2to3 function,
+    which provides a series of parameter entrances.
+    For details, please refer to the py2to3() function annotation
 
-    :param path:
-    :param interpreter_command_name:
-    :param is_transform:
-    :param is_del_bak:
-    :param is_html_diff:
-    :param is_check_requirements:
-    :return:
+    :param path: str, project path
+    :param interpreter_command_name: str, interpreter command name, default "python".
+    Please make sure that the Python terminal environment has been configured successfully
+    :param is_transform: bool, default False
+    :param is_del_bak: bool, default False
+    :param is_html_diff: bool, default False
+    :param is_check_requirements: bool, default False
+    :return: bool, ignore
 
     Example:
-    ---------
-        python cli.py -p ../tests/ticketGrabbingExample -i python -t 1 -d 0 -h 1 -r 1
+
+    py2to3 -p ../tests/ticketGrabbingExample -i python -t 1 -d 0 -h 1 -r 1
     """
     return py2to3(
         target_path=path,

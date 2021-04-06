@@ -21,19 +21,21 @@ import prettytable as pt
 from collections import Counter
 from collections import defaultdict
 from datetime import datetime
-from utils import (format_date_en2standard,
-                   is_number,
-                   find_files,
-                   print)
+from .utils import (format_date_en2standard,
+                    is_number,
+                    find_files,
+                    print)
 
 __all__ = ["libraries_detect_and_recommend"]
 
 
 def _version_str2tuple(vs):
     """
+    Tool function, which provides the data structure of the Python version
+    of the string form converted into a tuple
 
-    :param vs:
-    :return:
+    :param vs: string code
+    :return: 3-tuple
     """
     info = vs.split(".")
     if len(info) == 1 and is_number(info[0]):
@@ -56,14 +58,19 @@ def _version_str2tuple(vs):
     ]):
         return info[0], info[1], "*"
     else:
-        raise ValueError()
+        raise ValueError(
+            "Unable to determine the string form of the Python version, "
+            "please troubleshoot the reason or submit a PR to the developer!"
+        )
 
 
 def _update_python_versions():
     """
     Python release date configuration
-    :return:
+
+    :return: dict
     """
+    # request www.python.org to get information
     response = requests.get(url="https://www.python.org/doc/versions/").text
     match_response = re.findall("Python (.*?)</a>, documentation released on (.*?)</li>", response)
     versions = {
@@ -74,7 +81,8 @@ def _update_python_versions():
              match_response]
         )
     }
-    with open("conf/python_versions.json", "w", encoding="utf-8") as f:
+    # save on conf folder
+    with open(os.path.dirname(os.path.abspath(__file__)) + "/python_versions.json", "w", encoding="utf-8") as f:
         json.dump(versions, f, ensure_ascii=False)
     return versions
 
@@ -82,8 +90,9 @@ def _update_python_versions():
 def get_requirements_library(path):
     """
     Get all the dependent libraries in the specified requirements.txt
-    :param path:
-    :return:
+
+    :param path: str
+    :return: dict
     """
     requirements_dict = {}
     for requirement_file in find_files(path=path, pattern="*requirements*.txt"):
@@ -123,11 +132,11 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
         print("Python dependency library ({0}) does not have version.".format(ln))
         return results
     # Get the timeline of Python release version
-    if not os.path.exists("conf/python_versions.json"):
+    if not os.path.exists(os.path.dirname(os.path.abspath(__file__)) + "/python_versions.json"):
         # Determine whether there is a timetable cache for the Python release version
         versions = _update_python_versions()["versions"]
     else:
-        with open("conf/python_versions.json", "r", encoding="utf-8") as f:
+        with open(os.path.dirname(os.path.abspath(__file__)) + "/python_versions.json", "r", encoding="utf-8") as f:
             versions_dict = json.load(f)
         if (datetime.utcfromtimestamp(
             time.time()
@@ -243,7 +252,10 @@ def find_python_version_by_library_version(ln, lv, update_step=30):
                     int(version.replace(".", "")) < int("{0}.{1}.{2}".format(major, minor, micro[0]))
                 ]
         else:
-            print("other !!!!!!!!")
+            print(
+                "The form of the string in the Python dependency library cannot be judged. "
+                "Please troubleshoot the reason or submit a PR to the developer."
+            )
 
     # 3. Filtering according to the requirements_python of the release
     # version of the library is unsuccessful,
@@ -283,9 +295,14 @@ def find_python_versions_by_library_versions(name2version, update_step=30):
 
 def libraries_detect_and_recommend(target_path):
     """
+    Check whether the version of the project's dependent library is suitable for
+    the current Python environment and recommend to generate the most
+    suitable dependent library to the user.
 
-    :param target_path:
-    :return:
+    Main function
+
+    :param target_path: str
+    :return: bool, ignore
     """
     print(">>> Current Python Version: {0}.".format(sys.version))
     detect_recommend_results = pt.PrettyTable(["No", "Library", "Version", "Support Status", "Recommend Version"])
