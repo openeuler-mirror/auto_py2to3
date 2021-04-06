@@ -40,7 +40,7 @@ The main functions are as follows:
 
 Usage Example
 ------------
-.. image:: https://gitee.com/weihaitong/auto_py2to3/raw/master/example/ticketGrabbingExample-commandTest%20processing.png
+.. image:: https://gitee.com/weihaitong/auto_py2to3/blob/master/example/ticketGrabbingExample-commadTest%20processing.png
 
 Get Started!
 ------------
