@@ -9,6 +9,12 @@ Although most people in the Python community believe that Python needs urgent ch
 But many people are frustrated that Python 2 code works well. Therefore, code migration is needed, and the ultimate goal of the library is to realize automated and fast code migration and provide automated testing.
 In this process, although there may be some unsatisfactory aspects in the code migration process, the library will continue to be iterated and maintained.
 
+
+Features
+------------
+* Testing setup with unittest and python setup.py test or pytest
+* Command line interface using Click
+
 Architecture
 ------------
 
@@ -17,38 +23,41 @@ Architecture
 
 Version Support
 ------------
-* 2.x  to 3.x
+* Python 2.x  to 3.x
 
-Development Planning
+* Linux: build/passing
+* Windows: build/passing
+
+Functions
 ------------
+The main functions are as follows:
 
-1. Single file 2to3, run test cases. (Finished test)
-2. Single file 2to3, relying on library version retrieval and analysis, and running test cases. (Finished test)
-3. Single file 2to3, relying on library version upgrade and corresponding function upgrade, running test cases. (Finished test)
-4. Simple project structure transfer all py files as a whole, and run test cases. (Finished test)
-5. Test the conversion effects of several mainstream libraries, and modify optimization bugs. (Developing)
+1. Whether to enable automatic conversion of Python2 code to Python3
+2. Determine whether to keep the Python2 code backup
+3. Determine whether to open the conversion code text comparison
+4. Determine whether the version of the library that the project depends on is suitable for the current Python environment.
+
 
 Usage Example
 ------------
-.. image:: https://gitee.com/weihaitong/auto_py2to3/raw/master/example/ticketGrabbingExample-test%20processing.png
+.. image:: https://gitee.com/weihaitong/auto_py2to3/raw/master/example/ticketGrabbingExample-commadTest%20processing.png
 
-Contribution Get Started!
+Get Started!
 ------------
-
-Ready to contribute or user? Here's how to set up `auto_py2to3` for local development.
+Ready to contribute or use? Here's how to set up `auto_py2to3` for local development.
 
 1. Fork the `auto_py2to3` repo on Gitee.
 2. Clone your fork locally::
 
     $ git clone https://gitee.com/weihaitong/auto_py2to3.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. This is how you use this tool::
 
-    $ mkvirtualenv auto_py2to3
     $ cd auto_py2to3/
-    $ pipenv install -r requirements_dev.txt
+    $ python setup.py install
+    $ py2to3 --help
 
-4. Create a branch for local development::
+4. If you want to contribution to this project, you can create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 

@@ -10,7 +10,7 @@
 # See the Mulan PSL v2 for more details.
 # Create: 2021-2-1
 
-from utils import find_files, print
+from .utils import find_files, print
 from difflib import HtmlDiff
 import os
 
@@ -152,14 +152,24 @@ OS_ERROR_CODE = {
 def files_transform(target_path,
                     interpreter_command_name):
     """
+    Provide the specific implementation method of Python2 to Python3 function
+    for searching all the specified .py files of the project,
+    use the 2to3.py module for advanced packaging,
+    and print detailed possible causes of errors.
 
     :param target_path:
+           str, project path
     :param interpreter_command_name:
-    :return:
+           str, interpreter command name
+    :return: bool, ignore
     """
     for file in find_files(path=target_path, pattern="*.py"):
         try:
-            os_code = os.system("{0} libs/2to3.py -w {1}".format(interpreter_command_name, file))
+            os_code = os.system("{0} {1} -w {2}".format(
+                interpreter_command_name,
+                os.path.dirname(os.path.abspath(__file__)) + "/2to3.py",
+                file)
+            )
             if os_code != 0:
                 print(">>> ERROR: " + OS_ERROR_CODE.get(os_code, 1))
         except Exception as e:
@@ -170,9 +180,11 @@ def files_transform(target_path,
 
 def bak_files_clear(target_path):
     """
+    Provide code deletion function for Python2 backup.
 
     :param target_path:
-    :return:
+           str, project path
+    :return: bool, ignore
     """
     for file in find_files(path=target_path, pattern="*.bak"):
         try:
@@ -187,8 +199,8 @@ def html_diff_generate(target_path):
     """
     Generate converted comparison file (. HTML)
 
-    :param target_path:
-    :return:
+    :param target_path: str, project path
+    :return: bool, ignore
     """
     htmlDiff = HtmlDiff()
     for file in find_files(path=target_path, pattern="*.py"):
