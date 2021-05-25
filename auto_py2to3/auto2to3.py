@@ -73,9 +73,13 @@ def test():
 
     :return: bool, ignore
     """
+    import os
     try:
         py2to3(
-            target_path="../tests/ticketGrabbingExample",
+            target_path=os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "tests/ticketGrabbingExample"
+            ),
             interpreter_command_name="python",
             is_transform=False,
             is_del_bak=False,
