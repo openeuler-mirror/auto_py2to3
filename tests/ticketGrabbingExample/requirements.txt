@@ -27,7 +27,7 @@ matplotlib==3.2.2
 mlxtend==0.17.2
 msgpack==1.0.0
 mysqlclient==1.4.6
-numpy==1.18.2
+numpy==1.22.0
 
 patsy==0.5.1
 pdfkit==0.6.1
