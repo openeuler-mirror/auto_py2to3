@@ -35,7 +35,7 @@ pdfminer.six==20181108
 pdfplumber==0.5.14
 Pillow==7.1.2
 ply==3.11
-protobuf==3.12.2
+protobuf==3.18.3
 pycryptodome==3.9.7
 PyMySQL==0.10.0
 pypandoc==1.5
