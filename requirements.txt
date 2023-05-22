@@ -1,6 +1,6 @@
 2to3
 click==7.1.2
 deco==0.5.2
-requests==2.23.0
+requests==2.31.0
 prettytable==1.0.1
 setuptools~=49.2.0
