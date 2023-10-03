@@ -62,7 +62,7 @@ threadpoolctl==2.1.0
 thriftpy2==0.4.11
 tushare==1.2.57
 unicodecsv==0.14.1
-urllib3==1.25.9
+urllib3==1.26.17
 
 Wand==0.6.1
 websocket-client==0.57.0
